@@ -50,8 +50,6 @@
       overflow: hidden;
     }
 
-    /* ---------------- TAB STRIP ---------------- */
-
     .tab-strip {
       background-color: var(--bg-tabstrip);
       height: 40px;
@@ -194,8 +192,6 @@
       color: var(--text-active);
     }
 
-    /* ---------------- TOOLBAR ---------------- */
-
     .toolbar {
       background-color: var(--bg-toolbar);
       height: 44px;
@@ -250,8 +246,6 @@
       fill: currentColor;
     }
 
-    /* ---------------- OMNIBOX ---------------- */
-
     .omnibox-container {
       flex-grow: 1;
       min-width: 100px;
@@ -295,8 +289,6 @@
       z-index: 2;
     }
 
-    /* ---------------- BOOKMARKS ---------------- */
-
     .bookmarks-bar {
       background-color: var(--bg-toolbar);
       height: 28px;
@@ -324,13 +316,6 @@
       background-color: var(--btn-hover);
     }
 
-    .bookmark-icon {
-      width: 14px;
-      height: 14px;
-    }
-
-    /* ---------------- VIEWPORT ---------------- */
-
     .viewport {
       flex-grow: 1;
       background-color: var(--window-content);
@@ -344,8 +329,6 @@
       overflow: auto;
       position: relative;
     }
-
-    /* ---------------- NEW TAB PAGE ---------------- */
 
     .new-tab-page {
       width: 100%;
@@ -403,8 +386,6 @@
       font-size: 13px;
     }
 
-    /* ---------------- FRAME (Scramjet) ---------------- */
-
     #sj-frame-wrapper {
       display: none;
       position: absolute;
@@ -445,8 +426,6 @@
       border: 1px solid rgba(255, 255, 255, 0.03);
       font-family: "Courier New", monospace;
     }
-
-    /* ---------------- SETTINGS OVERLAY ---------------- */
 
     .settings-overlay {
       position: absolute;
@@ -572,40 +551,19 @@
       border-color: #4d90fe;
     }
 
-    .settings-btn {
-      background: #3c4043;
-      color: #e8eaed;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 16px;
-      cursor: pointer;
-      font-size: 13px;
-      flex-shrink: 0;
-    }
-
-    .settings-btn:hover {
-      background: #4c5053;
-    }
-
-    /* ---------------- RESPONSIVE ---------------- */
-
     @media (max-width: 700px) {
       .tab {
         width: 180px;
       }
-
       .tabs-container {
         max-width: calc(100% - 45px);
       }
-
       .bookmarks-bar {
         overflow-x: auto;
       }
-
       .extensions-box .tool-btn:first-child {
         display: none;
       }
-
       .settings-input {
         width: 150px;
       }
@@ -621,88 +579,48 @@
 
 <body>
 
-  <!-- TAB STRIP -->
   <div class="tab-strip">
     <div class="tabs-container" id="tabsContainer"></div>
     <div class="new-tab-btn" id="newTabBtn" title="New tab">+</div>
   </div>
 
-  <!-- TOOLBAR -->
   <div class="toolbar">
     <div class="nav-buttons">
-      <div class="tool-btn disabled" title="Back" id="backBtn">
-        <svg class="svg-icon" viewBox="0 0 24 24">
-          <path d="M20 11H7.83l5.59-5.59L12 4l-1.41 1.41L4 12l8 8 1.41-1.41L7.83 13H20v-2z"/>
-        </svg>
-      </div>
-      <div class="tool-btn disabled" title="Forward" id="forwardBtn">
-        <svg class="svg-icon" viewBox="0 0 24 24">
-          <path d="M4 11h12.17l-5.59-5.59L12 4l8 8-8 8-1.41-1.41L16.17 13H4v-2z"/>
-        </svg>
-      </div>
-      <div class="tool-btn" id="reloadBtn" title="Reload">
-        <svg class="svg-icon" viewBox="0 0 24 24">
-          <path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-        </svg>
-      </div>
+      <div class="tool-btn disabled" title="Back">↩</div>
+      <div class="tool-btn disabled" title="Forward">↪</div>
+      <div class="tool-btn" id="reloadBtn" title="Reload">⟳</div>
     </div>
 
     <div class="omnibox-container">
-      <span class="omnibox-icon-left" id="omniIcon">🔒</span>
+      <span class="omnibox-icon-left" id="omniIcon">🔍</span>
       <input id="omnibox" type="text" class="omnibox" value="" spellcheck="false">
       <span class="omnibox-icon-right">⭐</span>
     </div>
 
     <div class="extensions-box">
       <div class="tool-btn" title="Extensions">🧩</div>
-      <div class="tool-btn" title="Settings" id="settingsBtn">
-        <svg class="svg-icon" viewBox="0 0 24 24">
-          <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-        </svg>
-      </div>
+      <div class="tool-btn" title="Settings" id="settingsBtn">⚙</div>
     </div>
   </div>
 
-  <!-- BOOKMARKS BAR -->
   <div class="bookmarks-bar" id="bookmarksBar">
-    <div class="bookmark-item" data-url="https://www.google.com">
-      <span>🔍</span>
-      <span>Google</span>
-    </div>
-    <div class="bookmark-item" data-url="https://www.youtube.com">
-      <span>▶️</span>
-      <span>YouTube</span>
-    </div>
-    <div class="bookmark-item" data-url="https://github.com">
-      <span>🐙</span>
-      <span>GitHub</span>
-    </div>
-    <div class="bookmark-item" data-url="https://zaka.qzz.io/games.html">
-      <span>🎮</span>
-      <span>Games</span>
-    </div>
+    <div class="bookmark-item" data-url="https://www.google.com">🔍 Google</div>
+    <div class="bookmark-item" data-url="https://www.youtube.com">▶️ YouTube</div>
+    <div class="bookmark-item" data-url="https://github.com">🐙 GitHub</div>
+    <div class="bookmark-item" data-url="https://zaka.qzz.io/games.html">🎮 Games</div>
   </div>
 
-  <!-- WEB VIEWPORT -->
   <div class="viewport">
-    <div class="page" id="pageContainer">
-      <!-- New tab page rendered here -->
-    </div>
+    <div class="page" id="pageContainer"></div>
 
-    <!-- Scramjet Frame -->
     <div id="sj-frame-wrapper">
       <p id="sj-frame-url"></p>
       <iframe id="sj-frame" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals"></iframe>
     </div>
 
-    <!-- SETTINGS -->
     <div class="settings-overlay" id="settingsOverlay">
       <div class="settings-header">
-        <button class="settings-back" id="settingsBack" title="Back">
-          <svg class="svg-icon" viewBox="0 0 24 24">
-            <path d="M20 11H7.83l5.59-5.59L12 4l-1.41 1.41L4 12l8 8 1.41-1.41L7.83 13H20v-2z"/>
-          </svg>
-        </button>
+        <button class="settings-back" id="settingsBack">←</button>
         <div class="settings-title">Settings</div>
       </div>
 
@@ -729,22 +647,7 @@
               <div class="settings-row-title">Wisp Server</div>
               <div class="settings-row-description">WebSocket proxy server for education access.</div>
             </div>
-            <input class="settings-input" id="wisp-server" type="text" placeholder="wss://wisp.example.com/api/" value="wss://wisp.zaka.qzz.io/api/">
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <div class="settings-section-title">Privacy and security</div>
-          <div class="settings-row">
-            <div class="settings-row-left">
-              <div class="settings-row-title">Safe browsing</div>
-              <div class="settings-row-description">Standard protection</div>
-            </div>
-            <select class="settings-select">
-              <option selected>Standard</option>
-              <option>Enhanced</option>
-              <option>No protection</option>
-            </select>
+            <input class="settings-input" id="wisp-server" type="text" placeholder="wss://wisp.example.com/api/" value="">
           </div>
         </div>
       </div>
@@ -787,6 +690,8 @@
     var controller = null;
     var frame = null;
     var currentWisp = 'wss://' + window.location.host + '/api/';
+    var isControllerReady = false;
+    var pendingNavigate = null;
 
     // Load saved wisp
     var savedWisp = localStorage.getItem('zaka13_wisp_server');
@@ -816,57 +721,108 @@
     }
 
     async function initController() {
-      controller = null;
-      frame = null;
+      if (isControllerReady) return;
 
-      if (!navigator.serviceWorker.controller) {
-        await new Promise(function(resolve) {
-          navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true });
-        });
-      }
-
-      var Ctrl = window.dGFzazR6MTMzNw.Controller;
-      var cfg = window.dGFzazR6MTMzNw.config;
-      cfg.dGFzazQ = location.origin + BASE_PATH + 'bG9scmF0aW9u/bG9scmF0aW9u.js';
-      cfg.dGFza3o = location.origin + BASE_PATH + 'bG9scmF0aW9u/bG9scmF0aW9u.wasm';
-      cfg.ZWR1Y2F0aW9u = location.origin + BASE_PATH + 'bG9scmF0aW9u/emFrYTEz.js';
-      cfg.prefix = BASE_PATH + 'cFKBd/auth/login/token/';
-
-      var transport = new window.LibcurlTransport.LibcurlClient({
-        wisp: currentWisp,
-      });
-
-      controller = new Ctrl({
-        serviceworker: navigator.serviceWorker.controller,
-        transport: transport,
-      });
-      await controller.wait();
-
-      frame = controller.createFrame(frameElement);
-      if (!frame) throw new Error("createFrame returned null");
-    }
-
-    async function navigate(url) {
-      if (!url.startsWith("http")) url = "https://" + url;
-      if (!frame) await initController();
-      await frame.go(url);
-      frameWrapper.classList.add("active");
-      // Hide new tab page
-      document.getElementById("pageContainer").innerHTML = "";
       try {
-        var displayUrl = new URL(url);
-        frameUrl.textContent = displayUrl.hostname + displayUrl.pathname;
-        omnibox.value = url;
-        omniIcon.textContent = "🔒";
-      } catch (e) {
-        frameUrl.textContent = url;
-        omnibox.value = url;
+        // Wait for service worker
+        if (!navigator.serviceWorker.controller) {
+          await new Promise(function(resolve) {
+            navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true });
+          });
+        }
+
+        var Ctrl = window.dGFzazR6MTMzNw.Controller;
+        var cfg = window.dGFzazR6MTMzNw.config;
+        cfg.dGFzazQ = location.origin + BASE_PATH + 'bG9scmF0aW9u/bG9scmF0aW9u.js';
+        cfg.dGFza3o = location.origin + BASE_PATH + 'bG9scmF0aW9u/bG9scmF0aW9u.wasm';
+        cfg.ZWR1Y2F0aW9u = location.origin + BASE_PATH + 'bG9scmF0aW9u/emFrYTEz.js';
+        cfg.prefix = BASE_PATH + 'cFKBd/auth/login/token/';
+
+        var transport = new window.LibcurlTransport.LibcurlClient({
+          wisp: currentWisp,
+        });
+
+        controller = new Ctrl({
+          serviceworker: navigator.serviceWorker.controller,
+          transport: transport,
+        });
+        await controller.wait();
+
+        frame = controller.createFrame(frameElement);
+        if (!frame) throw new Error("createFrame returned null");
+
+        isControllerReady = true;
+
+        // Process any pending navigation
+        if (pendingNavigate) {
+          var url = pendingNavigate;
+          pendingNavigate = null;
+          await doNavigate(url);
+        }
+      } catch (err) {
+        console.error("Controller init error:", err);
+        // Try again after delay
+        setTimeout(function() {
+          isControllerReady = false;
+          initController();
+        }, 2000);
+        throw err;
       }
     }
 
-    function navigateTo(url) {
-      navigate(url);
+    async function doNavigate(url) {
+      if (!url.startsWith("http")) url = "https://" + url;
+
+      // If controller not ready, store navigation for later
+      if (!isControllerReady || !frame) {
+        pendingNavigate = url;
+        // Show loading state
+        frameWrapper.classList.add("active");
+        frameElement.src = "about:blank";
+        frameUrl.textContent = "Loading...";
+        // Initialize controller
+        try {
+          await initController();
+        } catch (err) {
+          console.error("Failed to init controller:", err);
+          frameWrapper.classList.remove("active");
+          return;
+        }
+        // If still not ready after init, return
+        if (!isControllerReady || !frame) return;
+      }
+
+      try {
+        await frame.go(url);
+        frameWrapper.classList.add("active");
+        document.getElementById("pageContainer").innerHTML = "";
+        try {
+          var displayUrl = new URL(url);
+          frameUrl.textContent = displayUrl.hostname + displayUrl.pathname;
+          omnibox.value = url;
+          omniIcon.textContent = "🔒";
+        } catch (e) {
+          frameUrl.textContent = url;
+          omnibox.value = url;
+        }
+      } catch (err) {
+        console.error("Navigation error:", err);
+        // Try to reinitialize and navigate again
+        isControllerReady = false;
+        frame = null;
+        controller = null;
+        pendingNavigate = url;
+        try {
+          await initController();
+        } catch (e) {
+          console.error("Re-init failed:", e);
+        }
+      }
     }
+
+    window.navigateTo = function(url) {
+      doNavigate(url);
+    };
 
     // ---- TAB MANAGEMENT ----
 
@@ -877,8 +833,6 @@
     const settingsOverlay = document.getElementById("settingsOverlay");
     const settingsBack = document.getElementById("settingsBack");
     const reloadBtn = document.getElementById("reloadBtn");
-    const backBtn = document.getElementById("backBtn");
-    const forwardBtn = document.getElementById("forwardBtn");
 
     let tabs = [];
     let activeTabId = null;
@@ -914,7 +868,7 @@
 
         const icon = document.createElement("img");
         icon.className = "tab-icon";
-        icon.src = tab.type === "newtab" ? "" : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%2335d07f' rx='3'/%3E%3Ctext x='8' y='11' text-anchor='middle' fill='%23000' font-size='10' font-family='Arial' font-weight='bold'%3Ez%3C/text%3E%3C/svg%3E";
+        icon.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%2335d07f' rx='3'/%3E%3Ctext x='8' y='11' text-anchor='middle' fill='%23000' font-size='10' font-family='Arial' font-weight='bold'%3Ez%3C/text%3E%3C/svg%3E";
         icon.alt = "";
 
         const title = document.createElement("span");
@@ -951,10 +905,10 @@
       activeTabId = id;
       settingsOverlay.classList.remove("open");
 
-      // Hide frame if visible
+      // Hide frame if needed
       frameWrapper.classList.remove("active");
 
-      if (tab.type === "newtab") {
+      if (tab.type === "newtab" || !tab.url) {
         renderNewTabPage(tab);
         omnibox.value = "";
         omniIcon.textContent = "🔍";
@@ -962,17 +916,8 @@
         // Show the frame with the tab's URL
         omnibox.value = tab.url || "";
         omniIcon.textContent = "🔒";
-        if (tab.url) {
-          frameWrapper.classList.add("active");
-          // Navigate in the frame
-          navigate(tab.url).catch(function(err) {
-            console.error("Navigation error:", err);
-          });
-        } else {
-          renderNewTabPage(tab);
-          omnibox.value = "";
-          omniIcon.textContent = "🔍";
-        }
+        // Navigate in the frame
+        doNavigate(tab.url);
       }
 
       renderTabs();
@@ -985,7 +930,7 @@
       const newTabPage = document.createElement("div");
       newTabPage.className = "new-tab-page";
 
-      // Use SVG logo
+      // SVG Logo
       const logo = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       logo.setAttribute("class", "google-logo");
       logo.setAttribute("viewBox", "0 0 60 20");
@@ -1034,7 +979,7 @@
         const searchEngine = searchEngineSelect ? searchEngineSelect.value : "https://www.google.com/search?q=%s";
         const url = search(val, searchEngine);
         tab.url = url;
-        tab.title = val;
+        tab.title = val.split('/')[2] || val;
         tab.type = "normal";
         renderTabs();
         switchTab(tab.id);
@@ -1045,7 +990,6 @@
       newTabPage.appendChild(subtitle);
       pageContainer.appendChild(newTabPage);
 
-      // Focus the input
       setTimeout(function() { input.focus(); }, 100);
     }
 
@@ -1086,14 +1030,13 @@
     reloadBtn.addEventListener("click", function() {
       const tab = tabs.find(item => item.id === activeTabId);
       if (!tab) return;
-      if (tab.type === "newtab") {
+      if (tab.type === "newtab" || !tab.url) {
         renderNewTabPage(tab);
-      } else if (tab.url) {
-        navigate(tab.url);
+      } else {
+        doNavigate(tab.url);
       }
     });
 
-    // Omnibox enter
     omnibox.addEventListener("keydown", function(event) {
       if (event.key !== "Enter") return;
       event.preventDefault();
@@ -1108,7 +1051,7 @@
       const url = search(val, searchEngine);
 
       tab.url = url;
-      tab.title = val;
+      tab.title = val.split('/')[2] || val;
       tab.type = "normal";
 
       renderTabs();
@@ -1140,15 +1083,20 @@
         if (val && val.startsWith('wss://')) {
           currentWisp = val;
           localStorage.setItem('zaka13_wisp_server', val);
+          isControllerReady = false;
           controller = null;
           frame = null;
+          // Reinitialize
+          initController();
         } else {
           var defaultWisp = 'wss://' + window.location.host + '/api/';
           this.value = defaultWisp;
           currentWisp = defaultWisp;
           localStorage.setItem('zaka13_wisp_server', defaultWisp);
+          isControllerReady = false;
           controller = null;
           frame = null;
+          initController();
         }
       });
     }
@@ -1160,7 +1108,14 @@
       });
     }
 
-    // ---- START ----
+    // ---- INIT ----
+    // Initialize controller in background
+    initController().catch(function(err) {
+      console.error("Initial controller init failed:", err);
+      // Will retry on first navigation
+    });
+
+    // Start with a new tab
     createNewTab();
   </script>
 

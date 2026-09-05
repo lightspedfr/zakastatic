@@ -225,6 +225,7 @@
       background: none;
       border: none;
       font-size: 16px;
+      padding: 0;
     }
 
     .tool-btn:hover {
@@ -793,6 +794,14 @@
         });
         await controller.wait();
 
+        // Make sure frame element exists
+        if (!frameElement) {
+          frameElement = document.getElementById("sj-frame");
+          if (!frameElement) {
+            throw new Error("Frame element not found");
+          }
+        }
+
         frame = controller.createFrame(frameElement);
         if (!frame) throw new Error("createFrame returned null");
 
@@ -823,13 +832,16 @@
       // If controller not ready, store navigation for later
       if (!isControllerReady || !frame) {
         pendingNavigate = url;
-        frameWrapper.classList.add("active");
-        frameElement.src = "about:blank";
-        frameUrl.textContent = "Loading...";
+        if (frameWrapper) {
+          frameWrapper.classList.add("active");
+        }
+        if (frameUrl) {
+          frameUrl.textContent = "Loading...";
+        }
         try {
           await initController();
         } catch (err) {
-          frameWrapper.classList.remove("active");
+          if (frameWrapper) frameWrapper.classList.remove("active");
           return;
         }
         if (!isControllerReady || !frame) return;
@@ -837,16 +849,17 @@
 
       try {
         await frame.go(url);
-        frameWrapper.classList.add("active");
-        document.getElementById("pageContainer").innerHTML = "";
+        if (frameWrapper) frameWrapper.classList.add("active");
+        var pageContainer = document.getElementById("pageContainer");
+        if (pageContainer) pageContainer.innerHTML = "";
         try {
           var displayUrl = new URL(url);
-          frameUrl.textContent = displayUrl.hostname + displayUrl.pathname;
-          omnibox.value = url;
-          omniIcon.textContent = "🔒";
+          if (frameUrl) frameUrl.textContent = displayUrl.hostname + displayUrl.pathname;
+          if (omnibox) omnibox.value = url;
+          if (omniIcon) omniIcon.textContent = "🔒";
         } catch (e) {
-          frameUrl.textContent = url;
-          omnibox.value = url;
+          if (frameUrl) frameUrl.textContent = url;
+          if (omnibox) omnibox.value = url;
         }
       } catch (err) {
         console.error("Navigation error:", err);
@@ -895,6 +908,7 @@
     }
 
     function renderTabs() {
+      if (!tabsContainer) return;
       tabsContainer.innerHTML = "";
       tabs.forEach(tab => {
         const tabElement = document.createElement("div");
@@ -943,19 +957,18 @@
       if (!tab) return;
 
       activeTabId = id;
-      settingsOverlay.classList.remove("open");
+      if (settingsOverlay) settingsOverlay.classList.remove("open");
 
       // Hide frame
-      frameWrapper.classList.remove("active");
+      if (frameWrapper) frameWrapper.classList.remove("active");
 
       if (tab.type === "newtab" || !tab.url) {
         renderNewTabPage(tab);
-        omnibox.value = "";
-        omniIcon.textContent = "🔍";
+        if (omnibox) omnibox.value = "";
+        if (omniIcon) omniIcon.textContent = "🔍";
       } else {
-        // Show the frame with the tab's URL
-        omnibox.value = tab.url || "";
-        omniIcon.textContent = "🔒";
+        if (omnibox) omnibox.value = tab.url || "";
+        if (omniIcon) omniIcon.textContent = "🔒";
         doNavigate(tab.url);
       }
 
@@ -963,8 +976,9 @@
     }
 
     function renderNewTabPage(tab) {
+      if (!pageContainer) return;
       pageContainer.innerHTML = "";
-      frameWrapper.classList.remove("active");
+      if (frameWrapper) frameWrapper.classList.remove("active");
 
       const newTabPage = document.createElement("div");
       newTabPage.className = "new-tab-page";
@@ -1053,49 +1067,59 @@
 
     // ---- EVENT LISTENERS ----
 
-    newTabBtn.addEventListener("click", createNewTab);
+    if (newTabBtn) {
+      newTabBtn.addEventListener("click", createNewTab);
+    }
 
-    settingsBtn.addEventListener("click", function() {
-      settingsOverlay.classList.add("open");
-    });
+    if (settingsBtn) {
+      settingsBtn.addEventListener("click", function() {
+        if (settingsOverlay) settingsOverlay.classList.add("open");
+      });
+    }
 
-    settingsBack.addEventListener("click", function() {
-      settingsOverlay.classList.remove("open");
-      if (activeTabId) {
-        switchTab(activeTabId);
-      }
-    });
+    if (settingsBack) {
+      settingsBack.addEventListener("click", function() {
+        if (settingsOverlay) settingsOverlay.classList.remove("open");
+        if (activeTabId) {
+          switchTab(activeTabId);
+        }
+      });
+    }
 
-    reloadBtn.addEventListener("click", function() {
-      const tab = tabs.find(item => item.id === activeTabId);
-      if (!tab) return;
-      if (tab.type === "newtab" || !tab.url) {
-        renderNewTabPage(tab);
-      } else {
-        doNavigate(tab.url);
-      }
-    });
+    if (reloadBtn) {
+      reloadBtn.addEventListener("click", function() {
+        const tab = tabs.find(item => item.id === activeTabId);
+        if (!tab) return;
+        if (tab.type === "newtab" || !tab.url) {
+          renderNewTabPage(tab);
+        } else {
+          doNavigate(tab.url);
+        }
+      });
+    }
 
-    omnibox.addEventListener("keydown", function(event) {
-      if (event.key !== "Enter") return;
-      event.preventDefault();
+    if (omnibox) {
+      omnibox.addEventListener("keydown", function(event) {
+        if (event.key !== "Enter") return;
+        event.preventDefault();
 
-      const val = omnibox.value.trim();
-      if (!val) return;
+        const val = omnibox.value.trim();
+        if (!val) return;
 
-      const tab = tabs.find(item => item.id === activeTabId);
-      if (!tab) return;
+        const tab = tabs.find(item => item.id === activeTabId);
+        if (!tab) return;
 
-      const searchEngine = searchEngineSelect ? searchEngineSelect.value : "https://www.google.com/search?q=%s";
-      const url = search(val, searchEngine);
+        const searchEngine = searchEngineSelect ? searchEngineSelect.value : "https://www.google.com/search?q=%s";
+        const url = search(val, searchEngine);
 
-      tab.url = url;
-      tab.title = val.split('/')[2] || val;
-      tab.type = "normal";
+        tab.url = url;
+        tab.title = val.split('/')[2] || val;
+        tab.type = "normal";
 
-      renderTabs();
-      switchTab(tab.id);
-    });
+        renderTabs();
+        switchTab(tab.id);
+      });
+    }
 
     // Bookmarks
     document.querySelectorAll('.bookmark-item').forEach(function(item) {

@@ -241,9 +241,11 @@
     }
 
     .svg-icon {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       fill: currentColor;
+      stroke: currentColor;
+      stroke-width: 1.5;
     }
 
     .omnibox-container {
@@ -307,9 +309,10 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 3px 6px;
+      padding: 3px 8px;
       border-radius: 4px;
       cursor: pointer;
+      white-space: nowrap;
     }
 
     .bookmark-item:hover {
@@ -337,7 +340,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding-bottom: 100px;
+      padding: 40px 20px 100px;
       background: #121212;
     }
 
@@ -464,6 +467,7 @@
       cursor: pointer;
       background: none;
       border: none;
+      font-size: 20px;
     }
 
     .settings-back:hover {
@@ -573,6 +577,9 @@
       .settings-input {
         width: 100px;
       }
+      .tab {
+        min-width: 100px;
+      }
     }
   </style>
 </head>
@@ -586,20 +593,36 @@
 
   <div class="toolbar">
     <div class="nav-buttons">
-      <div class="tool-btn disabled" title="Back">↩</div>
-      <div class="tool-btn disabled" title="Forward">↪</div>
-      <div class="tool-btn" id="reloadBtn" title="Reload">⟳</div>
+      <button class="tool-btn disabled" title="Back">
+        <svg class="svg-icon" viewBox="0 0 24 24">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-1.41 1.41L4 12l8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+      </button>
+      <button class="tool-btn disabled" title="Forward">
+        <svg class="svg-icon" viewBox="0 0 24 24">
+          <path d="M4 11h12.17l-5.59-5.59L12 4l8 8-8 8-1.41-1.41L16.17 13H4v-2z"/>
+        </svg>
+      </button>
+      <button class="tool-btn" id="reloadBtn" title="Reload">
+        <svg class="svg-icon" viewBox="0 0 24 24">
+          <path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+        </svg>
+      </button>
     </div>
 
     <div class="omnibox-container">
       <span class="omnibox-icon-left" id="omniIcon">🔍</span>
-      <input id="omnibox" type="text" class="omnibox" value="" spellcheck="false">
+      <input id="omnibox" type="text" class="omnibox" value="" spellcheck="false" placeholder="Search or enter URL">
       <span class="omnibox-icon-right">⭐</span>
     </div>
 
     <div class="extensions-box">
-      <div class="tool-btn" title="Extensions">🧩</div>
-      <div class="tool-btn" title="Settings" id="settingsBtn">⚙</div>
+      <button class="tool-btn" title="Extensions">🧩</button>
+      <button class="tool-btn" title="Settings" id="settingsBtn">
+        <svg class="svg-icon" viewBox="0 0 24 24">
+          <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -692,6 +715,7 @@
     var currentWisp = 'wss://' + window.location.host + '/api/';
     var isControllerReady = false;
     var pendingNavigate = null;
+    var initAttempts = 0;
 
     // Load saved wisp
     var savedWisp = localStorage.getItem('zaka13_wisp_server');
@@ -722,12 +746,33 @@
 
     async function initController() {
       if (isControllerReady) return;
+      if (initAttempts > 5) {
+        console.error("Max init attempts reached");
+        return;
+      }
+      initAttempts++;
 
       try {
+        // Check if required globals exist
+        if (typeof window.dGFzazR6MTMzNw === 'undefined') {
+          console.log("Controller not loaded yet, waiting...");
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          return initController();
+        }
+
         // Wait for service worker
         if (!navigator.serviceWorker.controller) {
           await new Promise(function(resolve) {
-            navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true });
+            var handler = function() {
+              navigator.serviceWorker.removeEventListener('controllerchange', handler);
+              resolve();
+            };
+            navigator.serviceWorker.addEventListener('controllerchange', handler);
+            // Also check if already controlled
+            if (navigator.serviceWorker.controller) {
+              navigator.serviceWorker.removeEventListener('controllerchange', handler);
+              resolve();
+            }
           });
         }
 
@@ -752,6 +797,7 @@
         if (!frame) throw new Error("createFrame returned null");
 
         isControllerReady = true;
+        console.log("Controller initialized successfully");
 
         // Process any pending navigation
         if (pendingNavigate) {
@@ -761,34 +807,31 @@
         }
       } catch (err) {
         console.error("Controller init error:", err);
-        // Try again after delay
+        isControllerReady = false;
+        // Retry after delay
         setTimeout(function() {
-          isControllerReady = false;
           initController();
-        }, 2000);
+        }, 3000);
         throw err;
       }
     }
 
     async function doNavigate(url) {
+      if (!url) return;
       if (!url.startsWith("http")) url = "https://" + url;
 
       // If controller not ready, store navigation for later
       if (!isControllerReady || !frame) {
         pendingNavigate = url;
-        // Show loading state
         frameWrapper.classList.add("active");
         frameElement.src = "about:blank";
         frameUrl.textContent = "Loading...";
-        // Initialize controller
         try {
           await initController();
         } catch (err) {
-          console.error("Failed to init controller:", err);
           frameWrapper.classList.remove("active");
           return;
         }
-        // If still not ready after init, return
         if (!isControllerReady || !frame) return;
       }
 
@@ -807,16 +850,13 @@
         }
       } catch (err) {
         console.error("Navigation error:", err);
-        // Try to reinitialize and navigate again
         isControllerReady = false;
         frame = null;
         controller = null;
         pendingNavigate = url;
-        try {
-          await initController();
-        } catch (e) {
-          console.error("Re-init failed:", e);
-        }
+        setTimeout(function() {
+          initController();
+        }, 1000);
       }
     }
 
@@ -905,7 +945,7 @@
       activeTabId = id;
       settingsOverlay.classList.remove("open");
 
-      // Hide frame if needed
+      // Hide frame
       frameWrapper.classList.remove("active");
 
       if (tab.type === "newtab" || !tab.url) {
@@ -916,7 +956,6 @@
         // Show the frame with the tab's URL
         omnibox.value = tab.url || "";
         omniIcon.textContent = "🔒";
-        // Navigate in the frame
         doNavigate(tab.url);
       }
 
@@ -1086,7 +1125,7 @@
           isControllerReady = false;
           controller = null;
           frame = null;
-          // Reinitialize
+          initAttempts = 0;
           initController();
         } else {
           var defaultWisp = 'wss://' + window.location.host + '/api/';
@@ -1096,6 +1135,7 @@
           isControllerReady = false;
           controller = null;
           frame = null;
+          initAttempts = 0;
           initController();
         }
       });
@@ -1109,14 +1149,15 @@
     }
 
     // ---- INIT ----
-    // Initialize controller in background
-    initController().catch(function(err) {
-      console.error("Initial controller init failed:", err);
-      // Will retry on first navigation
-    });
-
     // Start with a new tab
     createNewTab();
+
+    // Initialize controller in background
+    setTimeout(function() {
+      initController().catch(function(err) {
+        console.error("Controller init failed:", err);
+      });
+    }, 500);
   </script>
 
 </body>

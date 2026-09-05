@@ -702,486 +702,504 @@
   <script>
     // ---- SCRAMJET LOGIC ----
 
-    var BASE_PATH = location.pathname.replace(/\/[^\/]*$/, "/");
-    var frameWrapper = document.getElementById("sj-frame-wrapper");
-    var frameElement = document.getElementById("sj-frame");
-    var frameUrl = document.getElementById("sj-frame-url");
-    var omnibox = document.getElementById("omnibox");
-    var omniIcon = document.getElementById("omniIcon");
-    var wispInput = document.getElementById("wisp-server");
-    var searchEngineSelect = document.getElementById("searchEngineSelect");
+    // Wait for DOM to be fully ready
+    document.addEventListener('DOMContentLoaded', function() {
 
-    var controller = null;
-    var frame = null;
-    var currentWisp = 'wss://' + window.location.host + '/api/';
-    var isControllerReady = false;
-    var pendingNavigate = null;
-    var initAttempts = 0;
+      var BASE_PATH = location.pathname.replace(/\/[^\/]*$/, "/");
+      var frameWrapper = document.getElementById("sj-frame-wrapper");
+      var frameElement = document.getElementById("sj-frame");
+      var frameUrl = document.getElementById("sj-frame-url");
+      var omnibox = document.getElementById("omnibox");
+      var omniIcon = document.getElementById("omniIcon");
+      var wispInput = document.getElementById("wisp-server");
+      var searchEngineSelect = document.getElementById("searchEngineSelect");
 
-    // Load saved wisp
-    var savedWisp = localStorage.getItem('zaka13_wisp_server');
-    if (savedWisp && savedWisp.startsWith('wss://')) {
-      currentWisp = savedWisp;
-      if (wispInput) wispInput.value = savedWisp;
-    } else {
-      if (wispInput) {
-        wispInput.value = currentWisp;
-        localStorage.setItem('zaka13_wisp_server', currentWisp);
+      // Verify frame element exists
+      if (!frameElement) {
+        console.error("Frame element not found! Creating it...");
+        // Create the frame if it doesn't exist
+        var wrapper = document.getElementById("sj-frame-wrapper");
+        if (wrapper) {
+          frameElement = document.createElement("iframe");
+          frameElement.id = "sj-frame";
+          frameElement.sandbox = "allow-same-origin allow-scripts allow-popups allow-forms allow-modals";
+          wrapper.appendChild(frameElement);
+        }
       }
-    }
 
-    // Load saved search engine
-    var savedSearch = localStorage.getItem('zaka13_search_engine');
-    if (savedSearch && searchEngineSelect) {
-      searchEngineSelect.value = savedSearch;
-    }
+      var controller = null;
+      var frame = null;
+      var currentWisp = 'wss://' + window.location.host + '/api/';
+      var isControllerReady = false;
+      var pendingNavigate = null;
+      var initAttempts = 0;
 
-    function search(input, template) {
-      try { return new URL(input).toString(); } catch (e) {}
-      try {
-        var url = new URL("http://" + input);
-        if (url.hostname.includes(".")) return url.toString();
-      } catch (e) {}
-      return template.replace("%s", encodeURIComponent(input));
-    }
-
-    async function initController() {
-      if (isControllerReady) return;
-      if (initAttempts > 5) {
-        console.error("Max init attempts reached");
-        return;
+      // Load saved wisp
+      var savedWisp = localStorage.getItem('zaka13_wisp_server');
+      if (savedWisp && savedWisp.startsWith('wss://')) {
+        currentWisp = savedWisp;
+        if (wispInput) wispInput.value = savedWisp;
+      } else {
+        if (wispInput) {
+          wispInput.value = currentWisp;
+          localStorage.setItem('zaka13_wisp_server', currentWisp);
+        }
       }
-      initAttempts++;
 
-      try {
-        // Check if required globals exist
-        if (typeof window.dGFzazR6MTMzNw === 'undefined') {
-          console.log("Controller not loaded yet, waiting...");
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          return initController();
-        }
-
-        // Wait for service worker
-        if (!navigator.serviceWorker.controller) {
-          await new Promise(function(resolve) {
-            var handler = function() {
-              navigator.serviceWorker.removeEventListener('controllerchange', handler);
-              resolve();
-            };
-            navigator.serviceWorker.addEventListener('controllerchange', handler);
-            // Also check if already controlled
-            if (navigator.serviceWorker.controller) {
-              navigator.serviceWorker.removeEventListener('controllerchange', handler);
-              resolve();
-            }
-          });
-        }
-
-        var Ctrl = window.dGFzazR6MTMzNw.Controller;
-        var cfg = window.dGFzazR6MTMzNw.config;
-        cfg.dGFzazQ = location.origin + BASE_PATH + 'bG9scmF0aW9u/bG9scmF0aW9u.js';
-        cfg.dGFza3o = location.origin + BASE_PATH + 'bG9scmF0aW9u/bG9scmF0aW9u.wasm';
-        cfg.ZWR1Y2F0aW9u = location.origin + BASE_PATH + 'bG9scmF0aW9u/emFrYTEz.js';
-        cfg.prefix = BASE_PATH + 'cFKBd/auth/login/token/';
-
-        var transport = new window.LibcurlTransport.LibcurlClient({
-          wisp: currentWisp,
-        });
-
-        controller = new Ctrl({
-          serviceworker: navigator.serviceWorker.controller,
-          transport: transport,
-        });
-        await controller.wait();
-
-        // Make sure frame element exists
-        if (!frameElement) {
-          frameElement = document.getElementById("sj-frame");
-          if (!frameElement) {
-            throw new Error("Frame element not found");
-          }
-        }
-
-        frame = controller.createFrame(frameElement);
-        if (!frame) throw new Error("createFrame returned null");
-
-        isControllerReady = true;
-        console.log("Controller initialized successfully");
-
-        // Process any pending navigation
-        if (pendingNavigate) {
-          var url = pendingNavigate;
-          pendingNavigate = null;
-          await doNavigate(url);
-        }
-      } catch (err) {
-        console.error("Controller init error:", err);
-        isControllerReady = false;
-        // Retry after delay
-        setTimeout(function() {
-          initController();
-        }, 3000);
-        throw err;
+      // Load saved search engine
+      var savedSearch = localStorage.getItem('zaka13_search_engine');
+      if (savedSearch && searchEngineSelect) {
+        searchEngineSelect.value = savedSearch;
       }
-    }
 
-    async function doNavigate(url) {
-      if (!url) return;
-      if (!url.startsWith("http")) url = "https://" + url;
-
-      // If controller not ready, store navigation for later
-      if (!isControllerReady || !frame) {
-        pendingNavigate = url;
-        if (frameWrapper) {
-          frameWrapper.classList.add("active");
-        }
-        if (frameUrl) {
-          frameUrl.textContent = "Loading...";
-        }
+      function search(input, template) {
+        try { return new URL(input).toString(); } catch (e) {}
         try {
-          await initController();
-        } catch (err) {
-          if (frameWrapper) frameWrapper.classList.remove("active");
+          var url = new URL("http://" + input);
+          if (url.hostname.includes(".")) return url.toString();
+        } catch (e) {}
+        return template.replace("%s", encodeURIComponent(input));
+      }
+
+      async function initController() {
+        if (isControllerReady) return;
+        if (initAttempts > 5) {
+          console.error("Max init attempts reached");
           return;
         }
-        if (!isControllerReady || !frame) return;
-      }
+        initAttempts++;
 
-      try {
-        await frame.go(url);
-        if (frameWrapper) frameWrapper.classList.add("active");
-        var pageContainer = document.getElementById("pageContainer");
-        if (pageContainer) pageContainer.innerHTML = "";
         try {
-          var displayUrl = new URL(url);
-          if (frameUrl) frameUrl.textContent = displayUrl.hostname + displayUrl.pathname;
-          if (omnibox) omnibox.value = url;
-          if (omniIcon) omniIcon.textContent = "🔒";
-        } catch (e) {
-          if (frameUrl) frameUrl.textContent = url;
-          if (omnibox) omnibox.value = url;
+          // Check if required globals exist
+          if (typeof window.dGFzazR6MTMzNw === 'undefined') {
+            console.log("Controller not loaded yet, waiting...");
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            return initController();
+          }
+
+          // Wait for service worker
+          if (!navigator.serviceWorker.controller) {
+            await new Promise(function(resolve) {
+              var handler = function() {
+                navigator.serviceWorker.removeEventListener('controllerchange', handler);
+                resolve();
+              };
+              navigator.serviceWorker.addEventListener('controllerchange', handler);
+              if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.removeEventListener('controllerchange', handler);
+                resolve();
+              }
+            });
+          }
+
+          var Ctrl = window.dGFzazR6MTMzNw.Controller;
+          var cfg = window.dGFzazR6MTMzNw.config;
+          cfg.dGFzazQ = location.origin + BASE_PATH + 'bG9scmF0aW9u/bG9scmF0aW9u.js';
+          cfg.dGFza3o = location.origin + BASE_PATH + 'bG9scmF0aW9u/bG9scmF0aW9u.wasm';
+          cfg.ZWR1Y2F0aW9u = location.origin + BASE_PATH + 'bG9scmF0aW9u/emFrYTEz.js';
+          cfg.prefix = BASE_PATH + 'cFKBd/auth/login/token/';
+
+          var transport = new window.LibcurlTransport.LibcurlClient({
+            wisp: currentWisp,
+          });
+
+          controller = new Ctrl({
+            serviceworker: navigator.serviceWorker.controller,
+            transport: transport,
+          });
+          await controller.wait();
+
+          // Make sure frame element exists
+          if (!frameElement) {
+            frameElement = document.getElementById("sj-frame");
+            if (!frameElement) {
+              // Create frame if still missing
+              var wrapper = document.getElementById("sj-frame-wrapper");
+              if (wrapper) {
+                frameElement = document.createElement("iframe");
+                frameElement.id = "sj-frame";
+                frameElement.sandbox = "allow-same-origin allow-scripts allow-popups allow-forms allow-modals";
+                wrapper.appendChild(frameElement);
+              } else {
+                throw new Error("Frame element not found and cannot be created");
+              }
+            }
+          }
+
+          frame = controller.createFrame(frameElement);
+          if (!frame) throw new Error("createFrame returned null");
+
+          isControllerReady = true;
+          console.log("Controller initialized successfully");
+
+          // Process any pending navigation
+          if (pendingNavigate) {
+            var url = pendingNavigate;
+            pendingNavigate = null;
+            await doNavigate(url);
+          }
+        } catch (err) {
+          console.error("Controller init error:", err);
+          isControllerReady = false;
+          setTimeout(function() {
+            initController();
+          }, 3000);
+          throw err;
         }
-      } catch (err) {
-        console.error("Navigation error:", err);
-        isControllerReady = false;
-        frame = null;
-        controller = null;
-        pendingNavigate = url;
-        setTimeout(function() {
-          initController();
-        }, 1000);
       }
-    }
 
-    window.navigateTo = function(url) {
-      doNavigate(url);
-    };
+      async function doNavigate(url) {
+        if (!url) return;
+        if (!url.startsWith("http")) url = "https://" + url;
 
-    // ---- TAB MANAGEMENT ----
-
-    const tabsContainer = document.getElementById("tabsContainer");
-    const pageContainer = document.getElementById("pageContainer");
-    const newTabBtn = document.getElementById("newTabBtn");
-    const settingsBtn = document.getElementById("settingsBtn");
-    const settingsOverlay = document.getElementById("settingsOverlay");
-    const settingsBack = document.getElementById("settingsBack");
-    const reloadBtn = document.getElementById("reloadBtn");
-
-    let tabs = [];
-    let activeTabId = null;
-
-    function generateId() {
-      return Date.now() + Math.random().toString(16).slice(2);
-    }
-
-    function createNewTab() {
-      const id = generateId();
-      const tab = {
-        id,
-        title: "New Tab",
-        url: "",
-        type: "newtab"
-      };
-      tabs.push(tab);
-      renderTabs();
-      switchTab(id);
-    }
-
-    function renderTabs() {
-      if (!tabsContainer) return;
-      tabsContainer.innerHTML = "";
-      tabs.forEach(tab => {
-        const tabElement = document.createElement("div");
-        tabElement.className = "tab";
-        if (tab.id === activeTabId) {
-          tabElement.classList.add("active");
+        if (!isControllerReady || !frame) {
+          pendingNavigate = url;
+          if (frameWrapper) frameWrapper.classList.add("active");
+          if (frameUrl) frameUrl.textContent = "Loading...";
+          try {
+            await initController();
+          } catch (err) {
+            if (frameWrapper) frameWrapper.classList.remove("active");
+            return;
+          }
+          if (!isControllerReady || !frame) return;
         }
 
-        const content = document.createElement("div");
-        content.className = "tab-content";
+        try {
+          await frame.go(url);
+          if (frameWrapper) frameWrapper.classList.add("active");
+          var pageContainer = document.getElementById("pageContainer");
+          if (pageContainer) pageContainer.innerHTML = "";
+          try {
+            var displayUrl = new URL(url);
+            if (frameUrl) frameUrl.textContent = displayUrl.hostname + displayUrl.pathname;
+            if (omnibox) omnibox.value = url;
+            if (omniIcon) omniIcon.textContent = "🔒";
+          } catch (e) {
+            if (frameUrl) frameUrl.textContent = url;
+            if (omnibox) omnibox.value = url;
+          }
+        } catch (err) {
+          console.error("Navigation error:", err);
+          isControllerReady = false;
+          frame = null;
+          controller = null;
+          pendingNavigate = url;
+          setTimeout(function() {
+            initController();
+          }, 1000);
+        }
+      }
 
-        const icon = document.createElement("img");
-        icon.className = "tab-icon";
-        icon.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%2335d07f' rx='3'/%3E%3Ctext x='8' y='11' text-anchor='middle' fill='%23000' font-size='10' font-family='Arial' font-weight='bold'%3Ez%3C/text%3E%3C/svg%3E";
-        icon.alt = "";
+      window.navigateTo = function(url) {
+        doNavigate(url);
+      };
 
-        const title = document.createElement("span");
-        title.className = "tab-title";
-        title.textContent = tab.title || "New Tab";
+      // ---- TAB MANAGEMENT ----
 
-        const close = document.createElement("div");
-        close.className = "tab-close";
-        close.innerHTML = "&times;";
-        close.title = "Close";
+      const tabsContainer = document.getElementById("tabsContainer");
+      const pageContainer = document.getElementById("pageContainer");
+      const newTabBtn = document.getElementById("newTabBtn");
+      const settingsBtn = document.getElementById("settingsBtn");
+      const settingsOverlay = document.getElementById("settingsOverlay");
+      const settingsBack = document.getElementById("settingsBack");
+      const reloadBtn = document.getElementById("reloadBtn");
 
-        content.appendChild(icon);
-        content.appendChild(title);
-        tabElement.appendChild(content);
-        tabElement.appendChild(close);
+      let tabs = [];
+      let activeTabId = null;
 
-        tabElement.addEventListener("click", function() {
+      function generateId() {
+        return Date.now() + Math.random().toString(16).slice(2);
+      }
+
+      function createNewTab() {
+        const id = generateId();
+        const tab = {
+          id,
+          title: "New Tab",
+          url: "",
+          type: "newtab"
+        };
+        tabs.push(tab);
+        renderTabs();
+        switchTab(id);
+      }
+
+      function renderTabs() {
+        if (!tabsContainer) return;
+        tabsContainer.innerHTML = "";
+        tabs.forEach(tab => {
+          const tabElement = document.createElement("div");
+          tabElement.className = "tab";
+          if (tab.id === activeTabId) {
+            tabElement.classList.add("active");
+          }
+
+          const content = document.createElement("div");
+          content.className = "tab-content";
+
+          const icon = document.createElement("img");
+          icon.className = "tab-icon";
+          icon.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%2335d07f' rx='3'/%3E%3Ctext x='8' y='11' text-anchor='middle' fill='%23000' font-size='10' font-family='Arial' font-weight='bold'%3Ez%3C/text%3E%3C/svg%3E";
+          icon.alt = "";
+
+          const title = document.createElement("span");
+          title.className = "tab-title";
+          title.textContent = tab.title || "New Tab";
+
+          const close = document.createElement("div");
+          close.className = "tab-close";
+          close.innerHTML = "&times;";
+          close.title = "Close";
+
+          content.appendChild(icon);
+          content.appendChild(title);
+          tabElement.appendChild(content);
+          tabElement.appendChild(close);
+
+          tabElement.addEventListener("click", function() {
+            switchTab(tab.id);
+          });
+
+          close.addEventListener("click", function(event) {
+            event.stopPropagation();
+            closeTab(tab.id);
+          });
+
+          tabsContainer.appendChild(tabElement);
+        });
+      }
+
+      function switchTab(id) {
+        const tab = tabs.find(item => item.id === id);
+        if (!tab) return;
+
+        activeTabId = id;
+        if (settingsOverlay) settingsOverlay.classList.remove("open");
+
+        if (frameWrapper) frameWrapper.classList.remove("active");
+
+        if (tab.type === "newtab" || !tab.url) {
+          renderNewTabPage(tab);
+          if (omnibox) omnibox.value = "";
+          if (omniIcon) omniIcon.textContent = "🔍";
+        } else {
+          if (omnibox) omnibox.value = tab.url || "";
+          if (omniIcon) omniIcon.textContent = "🔒";
+          doNavigate(tab.url);
+        }
+
+        renderTabs();
+      }
+
+      function renderNewTabPage(tab) {
+        if (!pageContainer) return;
+        pageContainer.innerHTML = "";
+        if (frameWrapper) frameWrapper.classList.remove("active");
+
+        const newTabPage = document.createElement("div");
+        newTabPage.className = "new-tab-page";
+
+        const logo = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        logo.setAttribute("class", "google-logo");
+        logo.setAttribute("viewBox", "0 0 60 20");
+        logo.style.width = "180px";
+        logo.style.height = "auto";
+        logo.style.marginBottom = "28px";
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("width", "100%");
+        rect.setAttribute("height", "100%");
+        rect.setAttribute("fill", "#000");
+        rect.setAttribute("rx", "4");
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", "50%");
+        text.setAttribute("y", "55%");
+        text.setAttribute("fill", "#fff");
+        text.setAttribute("font-family", "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif");
+        text.setAttribute("font-size", "12");
+        text.setAttribute("font-weight", "600");
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("dominant-baseline", "middle");
+        text.setAttribute("letter-spacing", "0.5");
+        text.textContent = "zaka";
+        logo.appendChild(rect);
+        logo.appendChild(text);
+
+        const form = document.createElement("form");
+        form.className = "new-tab-form";
+
+        const input = document.createElement("input");
+        input.className = "new-tab-search";
+        input.type = "text";
+        input.placeholder = "Search Google or type a URL";
+        input.autocomplete = "off";
+        input.spellcheck = false;
+
+        form.appendChild(input);
+
+        const subtitle = document.createElement("div");
+        subtitle.className = "new-tab-subtitle";
+        subtitle.textContent = "Education Portal";
+
+        form.addEventListener("submit", function(event) {
+          event.preventDefault();
+          const val = input.value.trim();
+          if (!val) return;
+          const searchEngine = searchEngineSelect ? searchEngineSelect.value : "https://www.google.com/search?q=%s";
+          const url = search(val, searchEngine);
+          tab.url = url;
+          tab.title = val.split('/')[2] || val;
+          tab.type = "normal";
+          renderTabs();
           switchTab(tab.id);
         });
 
-        close.addEventListener("click", function(event) {
-          event.stopPropagation();
-          closeTab(tab.id);
+        newTabPage.appendChild(logo);
+        newTabPage.appendChild(form);
+        newTabPage.appendChild(subtitle);
+        pageContainer.appendChild(newTabPage);
+
+        setTimeout(function() { input.focus(); }, 100);
+      }
+
+      function closeTab(id) {
+        const index = tabs.findIndex(tab => tab.id === id);
+        if (index === -1) return;
+
+        tabs.splice(index, 1);
+
+        if (tabs.length === 0) {
+          createNewTab();
+          return;
+        }
+
+        if (activeTabId === id) {
+          const nextTab = tabs[Math.max(0, index - 1)];
+          switchTab(nextTab.id);
+        } else {
+          renderTabs();
+        }
+      }
+
+      // ---- EVENT LISTENERS ----
+
+      if (newTabBtn) {
+        newTabBtn.addEventListener("click", createNewTab);
+      }
+
+      if (settingsBtn) {
+        settingsBtn.addEventListener("click", function() {
+          if (settingsOverlay) settingsOverlay.classList.add("open");
         });
-
-        tabsContainer.appendChild(tabElement);
-      });
-    }
-
-    function switchTab(id) {
-      const tab = tabs.find(item => item.id === id);
-      if (!tab) return;
-
-      activeTabId = id;
-      if (settingsOverlay) settingsOverlay.classList.remove("open");
-
-      // Hide frame
-      if (frameWrapper) frameWrapper.classList.remove("active");
-
-      if (tab.type === "newtab" || !tab.url) {
-        renderNewTabPage(tab);
-        if (omnibox) omnibox.value = "";
-        if (omniIcon) omniIcon.textContent = "🔍";
-      } else {
-        if (omnibox) omnibox.value = tab.url || "";
-        if (omniIcon) omniIcon.textContent = "🔒";
-        doNavigate(tab.url);
       }
 
-      renderTabs();
-    }
-
-    function renderNewTabPage(tab) {
-      if (!pageContainer) return;
-      pageContainer.innerHTML = "";
-      if (frameWrapper) frameWrapper.classList.remove("active");
-
-      const newTabPage = document.createElement("div");
-      newTabPage.className = "new-tab-page";
-
-      // SVG Logo
-      const logo = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      logo.setAttribute("class", "google-logo");
-      logo.setAttribute("viewBox", "0 0 60 20");
-      logo.style.width = "180px";
-      logo.style.height = "auto";
-      logo.style.marginBottom = "28px";
-      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      rect.setAttribute("width", "100%");
-      rect.setAttribute("height", "100%");
-      rect.setAttribute("fill", "#000");
-      rect.setAttribute("rx", "4");
-      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      text.setAttribute("x", "50%");
-      text.setAttribute("y", "55%");
-      text.setAttribute("fill", "#fff");
-      text.setAttribute("font-family", "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif");
-      text.setAttribute("font-size", "12");
-      text.setAttribute("font-weight", "600");
-      text.setAttribute("text-anchor", "middle");
-      text.setAttribute("dominant-baseline", "middle");
-      text.setAttribute("letter-spacing", "0.5");
-      text.textContent = "zaka";
-      logo.appendChild(rect);
-      logo.appendChild(text);
-
-      const form = document.createElement("form");
-      form.className = "new-tab-form";
-
-      const input = document.createElement("input");
-      input.className = "new-tab-search";
-      input.type = "text";
-      input.placeholder = "Search Google or type a URL";
-      input.autocomplete = "off";
-      input.spellcheck = false;
-
-      form.appendChild(input);
-
-      const subtitle = document.createElement("div");
-      subtitle.className = "new-tab-subtitle";
-      subtitle.textContent = "Education Portal";
-
-      form.addEventListener("submit", function(event) {
-        event.preventDefault();
-        const val = input.value.trim();
-        if (!val) return;
-        const searchEngine = searchEngineSelect ? searchEngineSelect.value : "https://www.google.com/search?q=%s";
-        const url = search(val, searchEngine);
-        tab.url = url;
-        tab.title = val.split('/')[2] || val;
-        tab.type = "normal";
-        renderTabs();
-        switchTab(tab.id);
-      });
-
-      newTabPage.appendChild(logo);
-      newTabPage.appendChild(form);
-      newTabPage.appendChild(subtitle);
-      pageContainer.appendChild(newTabPage);
-
-      setTimeout(function() { input.focus(); }, 100);
-    }
-
-    function closeTab(id) {
-      const index = tabs.findIndex(tab => tab.id === id);
-      if (index === -1) return;
-
-      tabs.splice(index, 1);
-
-      if (tabs.length === 0) {
-        createNewTab();
-        return;
+      if (settingsBack) {
+        settingsBack.addEventListener("click", function() {
+          if (settingsOverlay) settingsOverlay.classList.remove("open");
+          if (activeTabId) {
+            switchTab(activeTabId);
+          }
+        });
       }
 
-      if (activeTabId === id) {
-        const nextTab = tabs[Math.max(0, index - 1)];
-        switchTab(nextTab.id);
-      } else {
-        renderTabs();
+      if (reloadBtn) {
+        reloadBtn.addEventListener("click", function() {
+          const tab = tabs.find(item => item.id === activeTabId);
+          if (!tab) return;
+          if (tab.type === "newtab" || !tab.url) {
+            renderNewTabPage(tab);
+          } else {
+            doNavigate(tab.url);
+          }
+        });
       }
-    }
 
-    // ---- EVENT LISTENERS ----
+      if (omnibox) {
+        omnibox.addEventListener("keydown", function(event) {
+          if (event.key !== "Enter") return;
+          event.preventDefault();
 
-    if (newTabBtn) {
-      newTabBtn.addEventListener("click", createNewTab);
-    }
+          const val = omnibox.value.trim();
+          if (!val) return;
 
-    if (settingsBtn) {
-      settingsBtn.addEventListener("click", function() {
-        if (settingsOverlay) settingsOverlay.classList.add("open");
+          const tab = tabs.find(item => item.id === activeTabId);
+          if (!tab) return;
+
+          const searchEngine = searchEngineSelect ? searchEngineSelect.value : "https://www.google.com/search?q=%s";
+          const url = search(val, searchEngine);
+
+          tab.url = url;
+          tab.title = val.split('/')[2] || val;
+          tab.type = "normal";
+
+          renderTabs();
+          switchTab(tab.id);
+        });
+      }
+
+      // Bookmarks
+      document.querySelectorAll('.bookmark-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+          const url = this.dataset.url;
+          if (!url) return;
+
+          const tab = tabs.find(item => item.id === activeTabId);
+          if (!tab) return;
+
+          tab.url = url;
+          tab.title = url.replace(/^https?:\/\//, '').split('/')[0] || "Bookmark";
+          tab.type = "normal";
+
+          renderTabs();
+          switchTab(tab.id);
+        });
       });
-    }
 
-    if (settingsBack) {
-      settingsBack.addEventListener("click", function() {
-        if (settingsOverlay) settingsOverlay.classList.remove("open");
-        if (activeTabId) {
-          switchTab(activeTabId);
-        }
-      });
-    }
+      // Wisp server change
+      if (wispInput) {
+        wispInput.addEventListener("change", function() {
+          var val = this.value.trim();
+          if (val && val.startsWith('wss://')) {
+            currentWisp = val;
+            localStorage.setItem('zaka13_wisp_server', val);
+            isControllerReady = false;
+            controller = null;
+            frame = null;
+            initAttempts = 0;
+            initController();
+          } else {
+            var defaultWisp = 'wss://' + window.location.host + '/api/';
+            this.value = defaultWisp;
+            currentWisp = defaultWisp;
+            localStorage.setItem('zaka13_wisp_server', defaultWisp);
+            isControllerReady = false;
+            controller = null;
+            frame = null;
+            initAttempts = 0;
+            initController();
+          }
+        });
+      }
 
-    if (reloadBtn) {
-      reloadBtn.addEventListener("click", function() {
-        const tab = tabs.find(item => item.id === activeTabId);
-        if (!tab) return;
-        if (tab.type === "newtab" || !tab.url) {
-          renderNewTabPage(tab);
-        } else {
-          doNavigate(tab.url);
-        }
-      });
-    }
+      // Search engine change
+      if (searchEngineSelect) {
+        searchEngineSelect.addEventListener("change", function() {
+          localStorage.setItem('zaka13_search_engine', this.value);
+        });
+      }
 
-    if (omnibox) {
-      omnibox.addEventListener("keydown", function(event) {
-        if (event.key !== "Enter") return;
-        event.preventDefault();
+      // ---- INIT ----
+      // Start with a new tab
+      createNewTab();
 
-        const val = omnibox.value.trim();
-        if (!val) return;
+      // Initialize controller in background
+      setTimeout(function() {
+        initController().catch(function(err) {
+          console.error("Controller init failed:", err);
+        });
+      }, 500);
 
-        const tab = tabs.find(item => item.id === activeTabId);
-        if (!tab) return;
-
-        const searchEngine = searchEngineSelect ? searchEngineSelect.value : "https://www.google.com/search?q=%s";
-        const url = search(val, searchEngine);
-
-        tab.url = url;
-        tab.title = val.split('/')[2] || val;
-        tab.type = "normal";
-
-        renderTabs();
-        switchTab(tab.id);
-      });
-    }
-
-    // Bookmarks
-    document.querySelectorAll('.bookmark-item').forEach(function(item) {
-      item.addEventListener('click', function() {
-        const url = this.dataset.url;
-        if (!url) return;
-
-        const tab = tabs.find(item => item.id === activeTabId);
-        if (!tab) return;
-
-        tab.url = url;
-        tab.title = url.replace(/^https?:\/\//, '').split('/')[0] || "Bookmark";
-        tab.type = "normal";
-
-        renderTabs();
-        switchTab(tab.id);
-      });
-    });
-
-    // Wisp server change
-    if (wispInput) {
-      wispInput.addEventListener("change", function() {
-        var val = this.value.trim();
-        if (val && val.startsWith('wss://')) {
-          currentWisp = val;
-          localStorage.setItem('zaka13_wisp_server', val);
-          isControllerReady = false;
-          controller = null;
-          frame = null;
-          initAttempts = 0;
-          initController();
-        } else {
-          var defaultWisp = 'wss://' + window.location.host + '/api/';
-          this.value = defaultWisp;
-          currentWisp = defaultWisp;
-          localStorage.setItem('zaka13_wisp_server', defaultWisp);
-          isControllerReady = false;
-          controller = null;
-          frame = null;
-          initAttempts = 0;
-          initController();
-        }
-      });
-    }
-
-    // Search engine change
-    if (searchEngineSelect) {
-      searchEngineSelect.addEventListener("change", function() {
-        localStorage.setItem('zaka13_search_engine', this.value);
-      });
-    }
-
-    // ---- INIT ----
-    // Start with a new tab
-    createNewTab();
-
-    // Initialize controller in background
-    setTimeout(function() {
-      initController().catch(function(err) {
-        console.error("Controller init failed:", err);
-      });
-    }, 500);
+    }); // End DOMContentLoaded
   </script>
 
 </body>

@@ -1,0 +1,1549 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Learning Portal</title>
+
+<link rel="icon" href="https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+:root{
+  --black:#080808;
+  --dark:#101010;
+  --panel:#151515;
+  --input:#1d1d1d;
+  --hover:#252525;
+  --active:#202020;
+  --border:rgba(255,255,255,.08);
+  --text:#f5f5f5;
+  --muted:#888;
+}
+
+html,
+body{
+  width:100%;
+  height:100%;
+  margin:0;
+  overflow:hidden;
+  background:#000;
+  color:var(--text);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+
+/* TABS */
+
+#tabs{
+  width:100%;
+  height:42px;
+  display:flex;
+  align-items:flex-end;
+  padding:0 8px;
+  gap:3px;
+  background:#090909;
+  border-bottom:1px solid var(--border);
+}
+
+.tab{
+  position:relative;
+  width:205px;
+  height:34px;
+  padding:0 9px 0 13px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  background:#0d0d0d;
+  color:#777;
+  border:1px solid transparent;
+  border-bottom:0;
+  border-radius:9px 9px 0 0;
+  cursor:pointer;
+  user-select:none;
+  font-size:13px;
+}
+
+.tab:hover{
+  background:#171717;
+  color:#aaa;
+}
+
+.tab.active{
+  background:#191919;
+  color:#fff;
+  border-color:var(--border);
+}
+
+.tab.active:hover{
+  background:#191919;
+}
+
+.tab-icon{
+  width:17px;
+  min-width:17px;
+  text-align:center;
+  color:#777;
+  font-size:12px;
+}
+
+.tab.active .tab-icon{
+  color:#bbb;
+}
+
+.tab .title{
+  flex:1;
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.close{
+  width:22px;
+  height:22px;
+  padding:0;
+  border:0;
+  border-radius:5px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:transparent;
+  color:#666;
+  cursor:pointer;
+  font-size:11px;
+}
+
+.close:hover{
+  background:#292929;
+  color:#fff;
+}
+
+#new-tab{
+  width:30px;
+  height:30px;
+  margin:0 0 6px 5px;
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:0;
+  border-radius:7px;
+  background:transparent;
+  color:#777;
+  cursor:pointer;
+  font-size:13px;
+}
+
+#new-tab:hover{
+  background:#202020;
+  color:#fff;
+}
+
+/* TOOLBAR */
+
+form#idk{
+  width:100%;
+  height:48px;
+  padding:0 12px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  background:#111;
+  border-bottom:1px solid var(--border);
+}
+
+.nav-btn{
+  width:31px;
+  height:31px;
+  padding:0;
+  border:0;
+  border-radius:7px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:transparent;
+  color:#777;
+  cursor:pointer;
+  font-size:13px;
+}
+
+.nav-btn:hover{
+  background:#222;
+  color:#eee;
+}
+
+#back i{
+  transform:translateX(-1px);
+}
+
+#forward i{
+  transform:translateX(1px);
+}
+
+/* ADDRESS BAR */
+
+.address-bar{
+  position:relative;
+  flex:1;
+  height:34px;
+  display:flex;
+  align-items:center;
+}
+
+.search-input{
+  width:100%;
+  height:34px;
+  padding:0 42px 0 38px;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:9px;
+  outline:none;
+  background:#1b1b1b;
+  color:#eee;
+  font-size:13px;
+}
+
+.search-input:hover{
+  background:#202020;
+}
+
+.search-input:focus{
+  background:#202020;
+  border-color:#444;
+}
+
+.search-input::placeholder{
+  color:#666;
+}
+
+#site-status{
+  position:absolute;
+  left:13px;
+  z-index:2;
+  color:#777;
+  font-size:12px;
+  pointer-events:none;
+}
+
+#site-status i{
+  display:block;
+}
+
+/* RIGHT SIDE */
+
+#right-tools{
+  display:flex;
+  align-items:center;
+  gap:2px;
+}
+
+.toolbar-btn{
+  width:31px;
+  height:31px;
+  border:0;
+  border-radius:7px;
+  background:transparent;
+  color:#777;
+  cursor:pointer;
+}
+
+.toolbar-btn:hover{
+  background:#222;
+  color:#eee;
+}
+
+/* HIDDEN */
+
+#proxysel,
+#trans,
+#wispthingy{
+  display:none;
+}
+
+/* CONTENT */
+
+#views{
+  width:100%;
+  height:calc(100vh - 90px);
+  background:#000;
+  position:relative;
+}
+
+.view{
+  width:100%;
+  height:100%;
+  display:none;
+  border:0;
+  background:#000;
+  position:absolute;
+  top:0;
+  left:0;
+}
+
+.view.active{
+  display:block;
+}
+
+/* New tab page */
+
+.new-tab-page{
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:#000;
+  position:absolute;
+  top:0;
+  left:0;
+  z-index:5;
+  padding:40px 20px;
+  overflow-y:auto;
+}
+
+.new-tab-logo{
+  width:160px;
+  margin-bottom:40px;
+  flex-shrink:0;
+}
+
+/* Shortcuts */
+
+.shortcuts{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:14px 22px;
+  max-width:600px;
+  width:100%;
+}
+
+.shortcut{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:9px;
+  cursor:pointer;
+  padding:4px;
+  border-radius:12px;
+  transition:background .12s ease;
+}
+
+.shortcut:hover{
+  background:rgba(255,255,255,.04);
+}
+
+.shortcut-icon{
+  width:58px;
+  height:58px;
+  border-radius:14px;
+  background:#1a1a1a;
+  border:1px solid rgba(255,255,255,.06);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  color:#555;
+  transition:background .12s ease, border-color .12s ease, color .12s ease;
+}
+
+.shortcut:hover .shortcut-icon{
+  background:#222;
+  border-color:rgba(255,255,255,.12);
+  color:#aaa;
+}
+
+.shortcut-icon i{
+  font-size:22px;
+}
+
+.shortcut-label{
+  font-size:11.5px;
+  color:#999;
+  text-align:center;
+  max-width:70px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-weight:400;
+}
+
+.shortcut:hover .shortcut-label{
+  color:#ccc;
+}
+
+/* Internal education:// pages */
+
+.internal-page{
+  width:100%;
+  height:100%;
+  background:#0a0a0a;
+  overflow-y:auto;
+  padding:36px 24px;
+  position:absolute;
+  top:0;
+  left:0;
+  z-index:5;
+  display:none;
+}
+
+.internal-page.active{
+  display:block;
+}
+
+.internal-container{
+  max-width:680px;
+  margin:0 auto;
+}
+
+.internal-header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:26px;
+  padding-bottom:18px;
+  border-bottom:1px solid var(--border);
+}
+
+.internal-back{
+  width:34px;
+  height:34px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:#888;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+}
+
+.internal-back:hover{
+  background:#1c1c1c;
+  color:#eee;
+}
+
+.internal-title{
+  font-size:20px;
+  font-weight:500;
+  color:#f0f0f0;
+  letter-spacing:.2px;
+}
+
+.internal-section{
+  margin-bottom:26px;
+  background:#101010;
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.internal-section-title{
+  padding:14px 18px;
+  font-size:12px;
+  color:#888;
+  text-transform:uppercase;
+  letter-spacing:.7px;
+  border-bottom:1px solid var(--border);
+  background:#0d0d0d;
+}
+
+.internal-row{
+  padding:16px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  border-bottom:1px solid var(--border);
+}
+
+.internal-row:last-child{
+  border-bottom:none;
+}
+
+.internal-row-left{
+  min-width:0;
+  flex:1;
+}
+
+.internal-row-title{
+  font-size:13.5px;
+  color:#e8e8e8;
+  margin-bottom:3px;
+}
+
+.internal-row-desc{
+  font-size:11.5px;
+  color:#666;
+  line-height:1.4;
+}
+
+.internal-input{
+  background:#161616;
+  color:#eee;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:7px;
+  padding:9px 12px;
+  outline:none;
+  font-size:12.5px;
+  width:260px;
+  flex-shrink:0;
+  font-family:inherit;
+}
+
+.internal-input:focus{
+  border-color:#3b82f6;
+  background:#1a1a1a;
+}
+
+.internal-select{
+  background:#161616;
+  color:#eee;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:7px;
+  padding:9px 12px;
+  outline:none;
+  font-size:12.5px;
+  flex-shrink:0;
+  font-family:inherit;
+  cursor:pointer;
+}
+
+.internal-select:focus{
+  border-color:#3b82f6;
+}
+
+.internal-btn{
+  background:#3b82f6;
+  color:#fff;
+  border:0;
+  border-radius:7px;
+  padding:9px 18px;
+  cursor:pointer;
+  font-size:12.5px;
+  font-family:inherit;
+  flex-shrink:0;
+}
+
+.internal-btn:hover{
+  background:#4a8ff7;
+}
+
+.internal-btn.secondary{
+  background:#222;
+  color:#ddd;
+}
+
+.internal-btn.secondary:hover{
+  background:#2c2c2c;
+}
+
+/* Modal */
+
+.modal-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.9);
+  z-index:9999;
+  justify-content:center;
+  align-items:center;
+}
+
+.modal-overlay.active{
+  display:flex;
+}
+
+.modal{
+  background:#151515;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:26px;
+  max-width:400px;
+  width:90%;
+}
+
+.modal h3{
+  color:#fff;
+  font-size:16px;
+  font-weight:400;
+  margin:0 0 18px;
+  text-align:center;
+}
+
+.modal label{
+  color:#888;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  display:block;
+  margin-bottom:5px;
+}
+
+.modal input{
+  width:100%;
+  background:#1d1d1d;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:7px;
+  padding:10px 12px;
+  color:#eee;
+  font-size:13px;
+  outline:none;
+  margin-bottom:16px;
+  font-family:inherit;
+}
+
+.modal input:focus{
+  border-color:#3b82f6;
+}
+
+.modal-actions{
+  display:flex;
+  gap:8px;
+  justify-content:flex-end;
+  margin-top:4px;
+}
+
+.modal-actions button{
+  border:0;
+  border-radius:7px;
+  padding:9px 20px;
+  cursor:pointer;
+  font-size:13px;
+  font-family:inherit;
+}
+
+.btn-cancel{
+  background:#252525;
+  color:#eee;
+}
+
+.btn-cancel:hover{
+  background:#2e2e2e;
+}
+
+.btn-save{
+  background:#3b82f6;
+  color:#fff;
+}
+
+.btn-save:hover{
+  background:#4a8ff7;
+}
+
+@media (max-width:600px){
+  .shortcuts{
+    grid-template-columns:repeat(4,1fr);
+    gap:12px 16px;
+  }
+  .shortcut-icon{
+    width:52px;
+    height:52px;
+  }
+  .internal-input{
+    width:160px;
+  }
+}
+
+@media (max-width:420px){
+  .shortcuts{
+    grid-template-columns:repeat(3,1fr);
+  }
+  .internal-row{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .internal-input{
+    width:100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- TABS -->
+<div id="tabs">
+
+  <button id="new-tab" type="button" title="New tab">
+    <i class="fa-solid fa-plus"></i>
+  </button>
+
+</div>
+
+
+<!-- TOOLBAR -->
+<form id="idk">
+
+  <button type="button" id="back" class="nav-btn" aria-label="Back" title="Back">
+    <i class="fa-solid fa-chevron-left"></i>
+  </button>
+
+  <button type="button" id="forward" class="nav-btn" aria-label="Forward" title="Forward">
+    <i class="fa-solid fa-chevron-right"></i>
+  </button>
+
+  <button type="button" id="reload" class="nav-btn" aria-label="Reload" title="Reload">
+    <i class="fa-solid fa-rotate-right"></i>
+  </button>
+
+  <div class="address-bar">
+    <span id="site-status">
+      <i class="fa-solid fa-globe"></i>
+    </span>
+    <input
+      id="url"
+      type="text"
+      class="search-input"
+      placeholder="Search or enter URL"
+      autocomplete="off"
+      spellcheck="false"
+    >
+  </div>
+
+  <div id="right-tools">
+    <button type="button" class="toolbar-btn" id="star" title="Bookmark">
+      <i class="fa-regular fa-star"></i>
+    </button>
+    <button type="button" class="toolbar-btn" id="menu" title="Settings">
+      <i class="fa-solid fa-gear"></i>
+    </button>
+  </div>
+
+  <select id="wispthingy"></select>
+
+</form>
+
+
+<!-- VIEWS -->
+<div id="views"></div>
+
+
+<!-- Shortcut edit modal -->
+<div class="modal-overlay" id="shortcut-modal">
+  <div class="modal">
+    <h3>Edit Shortcut</h3>
+    <label for="sc-name">Name</label>
+    <input id="sc-name" type="text" placeholder="e.g. YouTube">
+    <label for="sc-url">URL</label>
+    <input id="sc-url" type="text" placeholder="https://youtube.com">
+    <label for="sc-icon">Icon (Font Awesome class)</label>
+    <input id="sc-icon" type="text" placeholder="fa-solid fa-globe">
+    <div class="modal-actions">
+      <button class="btn-cancel" id="sc-cancel" type="button">Cancel</button>
+      <button class="btn-save" id="sc-save" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// Service worker registration
+(function() {
+  var BASE_PATH = location.pathname.replace(/\/[^\/]*$/, "/");
+  if (navigator.serviceWorker) {
+    navigator.serviceWorker.register(BASE_PATH + 'sw.js', {
+      scope: BASE_PATH,
+      updateViaCache: 'none'
+    }).catch(function() {});
+  }
+})();
+</script>
+
+<script src="/__/2jG7q.js"></script>
+<script src="/__/wR4tN.js"></script>
+<script src="/__/xoqfE.js"></script>
+<script src="/__/1GaxU.js"></script>
+<script src="bG9scmF0aW9u/bG9scmF0aW9u.js"></script>
+<script src="bG9scmF0aW9u/dGFzaw.js"></script>
+<script src="bG9scmF0aW9u/ejRrc2F0.js"></script>
+
+<script>
+(function() {
+  "use strict";
+
+  var BASE_PATH = location.pathname.replace(/\/[^\/]*$/, "/");
+  var tabs = document.getElementById("tabs");
+  var views = document.getElementById("views");
+  var urlInput = document.getElementById("url");
+  var newTab = document.getElementById("new-tab");
+  var back = document.getElementById("back");
+  var forward = document.getElementById("forward");
+  var reload = document.getElementById("reload");
+
+  var controller = null;
+  var isControllerReady = false;
+  var initAttempts = 0;
+  var pendingNavigate = null;
+  var currentWisp = 'wss://' + window.location.host + '/api/';
+  var searchEngine = "https://www.google.com/search?q=%s";
+
+  var tabId = 0;
+  var activeTab = null;
+  var tabData = new Map();
+
+  // Load saved settings
+  var savedWisp = localStorage.getItem('zaka13_wisp_server');
+  if (savedWisp && savedWisp.startsWith('wss://')) currentWisp = savedWisp;
+  var savedSearch = localStorage.getItem('zaka13_search_engine');
+  if (savedSearch) searchEngine = savedSearch;
+
+  // ---- SHORTCUTS (all placeholders for now) ----
+
+  var defaultShortcuts = [
+    { name: "YouTube",  url: "https://youtube.com",    icon: "fa-solid fa-globe" },
+    { name: "GitHub",   url: "https://github.com",     icon: "fa-solid fa-globe" },
+    { name: "Discord",  url: "https://discord.com",    icon: "fa-solid fa-globe" },
+    { name: "Twitter",  url: "https://twitter.com",    icon: "fa-solid fa-globe" },
+    { name: "Reddit",   url: "https://reddit.com",     icon: "fa-solid fa-globe" },
+    { name: "Spotify",  url: "https://spotify.com",    icon: "fa-solid fa-globe" },
+    { name: "Netflix",  url: "https://netflix.com",    icon: "fa-solid fa-globe" },
+    { name: "Twitch",   url: "https://twitch.tv",      icon: "fa-solid fa-globe" },
+    { name: "Gmail",    url: "https://mail.google.com",icon: "fa-solid fa-globe" }
+  ];
+
+  var shortcuts = [];
+  try {
+    var savedSc = localStorage.getItem('zaka13_shortcuts_v3');
+    if (savedSc) shortcuts = JSON.parse(savedSc);
+    else shortcuts = defaultShortcuts.slice();
+  } catch(e) {
+    shortcuts = defaultShortcuts.slice();
+  }
+
+  function saveShortcuts() {
+    try { localStorage.setItem('zaka13_shortcuts_v3', JSON.stringify(shortcuts)); } catch(e) {}
+  }
+
+  // ---- INTERNAL PAGE BUILDER ----
+
+  function buildSettingsPage(data) {
+    var page = document.createElement("div");
+    page.className = "internal-page";
+
+    var container = document.createElement("div");
+    container.className = "internal-container";
+
+    // Header
+    var header = document.createElement("div");
+    header.className = "internal-header";
+
+    var backBtn = document.createElement("button");
+    backBtn.className = "internal-back";
+    backBtn.type = "button";
+    backBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
+    backBtn.addEventListener("click", function() {
+      // Go back to new tab page
+      data.url = "";
+      data.title.textContent = "New Tab";
+      hideInternalPage(data);
+      showNewTabPage(data);
+      urlInput.value = "";
+      var si = document.getElementById("site-status");
+      if (si) si.innerHTML = '<i class="fa-solid fa-globe"></i>';
+    });
+
+    var title = document.createElement("div");
+    title.className = "internal-title";
+    title.textContent = "Settings";
+
+    header.appendChild(backBtn);
+    header.appendChild(title);
+
+    // Network section
+    var netSection = document.createElement("div");
+    netSection.className = "internal-section";
+
+    var netTitle = document.createElement("div");
+    netTitle.className = "internal-section-title";
+    netTitle.textContent = "Network";
+
+    var wispRow = document.createElement("div");
+    wispRow.className = "internal-row";
+
+    var wispLeft = document.createElement("div");
+    wispLeft.className = "internal-row-left";
+    wispLeft.innerHTML = '<div class="internal-row-title">Wisp Server</div><div class="internal-row-desc">WebSocket proxy server used for all connections.</div>';
+
+    var wispIn = document.createElement("input");
+    wispIn.className = "internal-input";
+    wispIn.type = "text";
+    wispIn.value = currentWisp;
+    wispIn.placeholder = "wss://wisp.example.com/api/";
+
+    wispRow.appendChild(wispLeft);
+    wispRow.appendChild(wispIn);
+
+    netSection.appendChild(netTitle);
+    netSection.appendChild(wispRow);
+
+    // Search section
+    var searchSection = document.createElement("div");
+    searchSection.className = "internal-section";
+
+    var searchTitle = document.createElement("div");
+    searchTitle.className = "internal-section-title";
+    searchTitle.textContent = "Search";
+
+    var searchRow = document.createElement("div");
+    searchRow.className = "internal-row";
+
+    var searchLeft = document.createElement("div");
+    searchLeft.className = "internal-row-left";
+    searchLeft.innerHTML = '<div class="internal-row-title">Search engine</div><div class="internal-row-desc">Used when a search query is typed in the address bar.</div>';
+
+    var searchSel = document.createElement("select");
+    searchSel.className = "internal-select";
+    var engines = [
+      { v: "https://www.google.com/search?q=%s", n: "Google" },
+      { v: "https://www.bing.com/search?q=%s", n: "Bing" },
+      { v: "https://duckduckgo.com/?q=%s", n: "DuckDuckGo" },
+      { v: "https://search.brave.com/search?q=%s", n: "Brave" }
+    ];
+    engines.forEach(function(e) {
+      var opt = document.createElement("option");
+      opt.value = e.v;
+      opt.textContent = e.n;
+      if (e.v === searchEngine) opt.selected = true;
+      searchSel.appendChild(opt);
+    });
+
+    searchRow.appendChild(searchLeft);
+    searchRow.appendChild(searchSel);
+
+    searchSection.appendChild(searchTitle);
+    searchSection.appendChild(searchRow);
+
+    // Actions section
+    var actionsSection = document.createElement("div");
+    actionsSection.className = "internal-section";
+
+    var actionsTitle = document.createElement("div");
+    actionsTitle.className = "internal-section-title";
+    actionsTitle.textContent = "Actions";
+
+    var saveRow = document.createElement("div");
+    saveRow.className = "internal-row";
+
+    var saveLeft = document.createElement("div");
+    saveLeft.className = "internal-row-left";
+    saveLeft.innerHTML = '<div class="internal-row-title">Save settings</div><div class="internal-row-desc">Apply changes and reconnect the proxy.</div>';
+
+    var saveBtn = document.createElement("button");
+    saveBtn.className = "internal-btn";
+    saveBtn.type = "button";
+    saveBtn.textContent = "Save";
+    saveBtn.addEventListener("click", function() {
+      var newWisp = wispIn.value.trim();
+      if (newWisp && newWisp.startsWith('wss://')) {
+        currentWisp = newWisp;
+        localStorage.setItem('zaka13_wisp_server', newWisp);
+        isControllerReady = false;
+        controller = null;
+        tabData.forEach(function(d) { d.frame = null; });
+        initController();
+      }
+
+      searchEngine = searchSel.value;
+      localStorage.setItem('zaka13_search_engine', searchEngine);
+
+      // Small feedback
+      saveBtn.textContent = "Saved";
+      setTimeout(function() { saveBtn.textContent = "Save"; }, 1200);
+    });
+
+    saveRow.appendChild(saveLeft);
+    saveRow.appendChild(saveBtn);
+
+    var resetRow = document.createElement("div");
+    resetRow.className = "internal-row";
+
+    var resetLeft = document.createElement("div");
+    resetLeft.className = "internal-row-left";
+    resetLeft.innerHTML = '<div class="internal-row-title">Reset shortcuts</div><div class="internal-row-desc">Restore the default site shortcuts.</div>';
+
+    var resetBtn = document.createElement("button");
+    resetBtn.className = "internal-btn secondary";
+    resetBtn.type = "button";
+    resetBtn.textContent = "Reset";
+    resetBtn.addEventListener("click", function() {
+      shortcuts = defaultShortcuts.slice();
+      saveShortcuts();
+      tabData.forEach(function(d) {
+        if (d.shortcutsContainer) renderShortcuts(d.shortcutsContainer, d);
+      });
+      resetBtn.textContent = "Reset";
+    });
+
+    resetRow.appendChild(resetLeft);
+    resetRow.appendChild(resetBtn);
+
+    actionsSection.appendChild(actionsTitle);
+    actionsSection.appendChild(saveRow);
+    actionsSection.appendChild(resetRow);
+
+    container.appendChild(header);
+    container.appendChild(netSection);
+    container.appendChild(searchSection);
+    container.appendChild(actionsSection);
+
+    page.appendChild(container);
+
+    return page;
+  }
+
+  function openSettingsPage(data) {
+    if (!data.settingsPage) {
+      data.settingsPage = buildSettingsPage(data);
+      views.appendChild(data.settingsPage);
+    } else {
+      // Refresh values
+      var inputs = data.settingsPage.querySelectorAll(".internal-input");
+      if (inputs[0]) inputs[0].value = currentWisp;
+      var sels = data.settingsPage.querySelectorAll(".internal-select");
+      if (sels[0]) sels[0].value = searchEngine;
+    }
+
+    // Hide everything else
+    tabData.forEach(function(t) {
+      t.iframe.classList.remove("active");
+      if (t.newTabPage) t.newTabPage.style.display = "none";
+      if (t.settingsPage) t.settingsPage.classList.remove("active");
+    });
+
+    data.settingsPage.classList.add("active");
+    data.iframe.classList.remove("active");
+    if (data.newTabPage) data.newTabPage.style.display = "none";
+
+    urlInput.value = "education://settings";
+    data.url = "education://settings";
+    data.title.textContent = "Settings";
+
+    var si = document.getElementById("site-status");
+    if (si) si.innerHTML = '<i class="fa-solid fa-gear"></i>';
+
+    activeTab = data.id;
+    renderTabs();
+  }
+
+  function hideInternalPage(data) {
+    if (data.settingsPage) data.settingsPage.classList.remove("active");
+  }
+
+  // ---- SCRAMJET ----
+
+  function search(input, template) {
+    try { return new URL(input).toString(); } catch (e) {}
+    try {
+      var url = new URL("http://" + input);
+      if (url.hostname.includes(".")) return url.toString();
+    } catch (e) {}
+    return template.replace("%s", encodeURIComponent(input));
+  }
+
+  async function initController() {
+    if (isControllerReady) return;
+    if (initAttempts > 10) return;
+    initAttempts++;
+
+    try {
+      if (typeof window.dGFzazR6MTMzNw === 'undefined') {
+        await new Promise(resolve => setTimeout(resolve, 800));
+        return initController();
+      }
+
+      if (!navigator.serviceWorker.controller) {
+        await new Promise(function(resolve) {
+          var handler = function() {
+            navigator.serviceWorker.removeEventListener('controllerchange', handler);
+            resolve();
+          };
+          navigator.serviceWorker.addEventListener('controllerchange', handler);
+          if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.removeEventListener('controllerchange', handler);
+            resolve();
+          }
+        });
+      }
+
+      var Ctrl = window.dGFzazR6MTMzNw.Controller;
+      var cfg = window.dGFzazR6MTMzNw.config;
+      cfg.dGFzazQ = location.origin + BASE_PATH + 'bG9scmF0aW9u/bG9scmF0aW9u.js';
+      cfg.dGFza3o = location.origin + BASE_PATH + 'bG9scmF0aW9u/bG9scmF0aW9u.wasm';
+      cfg.ZWR1Y2F0aW9u = location.origin + BASE_PATH + 'bG9scmF0aW9u/emFrYTEz.js';
+      cfg.prefix = BASE_PATH + 'cFKBd/auth/login/token/';
+
+      var transport = new window.LibcurlTransport.LibcurlClient({
+        wisp: currentWisp,
+      });
+
+      controller = new Ctrl({
+        serviceworker: navigator.serviceWorker.controller,
+        transport: transport,
+      });
+      await controller.wait();
+
+      isControllerReady = true;
+      console.log("Controller initialized successfully");
+
+      if (pendingNavigate) {
+        var pn = pendingNavigate;
+        pendingNavigate = null;
+        await doNavigate(pn.url, pn.tabId);
+      }
+    } catch (err) {
+      console.error("Controller init error:", err);
+      isControllerReady = false;
+      setTimeout(function() { initController(); }, 2500);
+      throw err;
+    }
+  }
+
+  async function doNavigate(url, tabIdToUse) {
+    if (!url) return;
+    if (!url.startsWith("http")) url = "https://" + url;
+
+    if (!isControllerReady) {
+      pendingNavigate = { url: url, tabId: tabIdToUse };
+      try { await initController(); } catch (err) { return; }
+      if (!isControllerReady) return;
+    }
+
+    var data = tabData.get(tabIdToUse);
+    if (!data) return;
+
+    // Hide new tab & settings pages
+    hideNewTabPage(data);
+    hideInternalPage(data);
+
+    try {
+      if (!data.frame) {
+        data.frame = controller.createFrame(data.iframe);
+        if (!data.frame) throw new Error("createFrame returned null");
+      }
+
+      await data.frame.go(url);
+      data.url = url;
+
+      try {
+        urlInput.value = url;
+        var statusIcon = document.getElementById("site-status");
+        if (statusIcon) statusIcon.innerHTML = '<i class="fa-solid fa-lock"></i>';
+      } catch (e) {
+        urlInput.value = url;
+      }
+
+      try {
+        var hostname = new URL(url).hostname;
+        data.title.textContent = hostname;
+      } catch (e) {
+        data.title.textContent = url;
+      }
+
+      data.iframe.classList.add("active");
+    } catch (err) {
+      console.error("Navigation error:", err);
+      isControllerReady = false;
+      controller = null;
+      pendingNavigate = { url: url, tabId: tabIdToUse };
+      setTimeout(function() { initController(); }, 1000);
+    }
+  }
+
+  // ---- SHORTCUT RENDER ----
+
+  function renderShortcuts(container, data) {
+    container.innerHTML = "";
+
+    shortcuts.forEach(function(sc, i) {
+      var btn = document.createElement("div");
+      btn.className = "shortcut";
+      btn.title = sc.url;
+
+      var iconBox = document.createElement("div");
+      iconBox.className = "shortcut-icon";
+      var iconI = document.createElement("i");
+      iconI.className = sc.icon || "fa-solid fa-globe";
+      iconBox.appendChild(iconI);
+
+      var label = document.createElement("div");
+      label.className = "shortcut-label";
+      label.textContent = sc.name;
+
+      btn.appendChild(iconBox);
+      btn.appendChild(label);
+
+      btn.addEventListener("click", function() {
+        if (!data) return;
+        data.url = sc.url;
+        data.title.textContent = sc.name;
+        hideNewTabPage(data);
+        hideInternalPage(data);
+        doNavigate(sc.url, data.id);
+      });
+
+      btn.addEventListener("contextmenu", function(e) {
+        e.preventDefault();
+        openShortcutEditor(i, data);
+      });
+
+      container.appendChild(btn);
+    });
+
+    var addBtn = document.createElement("div");
+    addBtn.className = "shortcut";
+    addBtn.title = "Add shortcut";
+
+    var addIcon = document.createElement("div");
+    addIcon.className = "shortcut-icon";
+    var addI = document.createElement("i");
+    addI.className = "fa-solid fa-plus";
+    addI.style.color = "#666";
+    addIcon.appendChild(addI);
+
+    var addLabel = document.createElement("div");
+    addLabel.className = "shortcut-label";
+    addLabel.textContent = "Add";
+
+    addBtn.appendChild(addIcon);
+    addBtn.appendChild(addLabel);
+
+    addBtn.addEventListener("click", function() {
+      openShortcutEditor(-1, data);
+    });
+
+    container.appendChild(addBtn);
+  }
+
+  // ---- SHORTCUT EDITOR ----
+
+  var shortcutEditIndex = -1;
+
+  function openShortcutEditor(index, data) {
+    shortcutEditIndex = index;
+    var modal = document.getElementById("shortcut-modal");
+    var nameInput = document.getElementById("sc-name");
+    var urlInputSc = document.getElementById("sc-url");
+    var iconInput = document.getElementById("sc-icon");
+
+    if (index >= 0 && shortcuts[index]) {
+      nameInput.value = shortcuts[index].name || "";
+      urlInputSc.value = shortcuts[index].url || "";
+      iconInput.value = shortcuts[index].icon || "";
+    } else {
+      nameInput.value = "";
+      urlInputSc.value = "";
+      iconInput.value = "";
+    }
+
+    modal.classList.add("active");
+    setTimeout(function() { nameInput.focus(); }, 50);
+  }
+
+  document.getElementById("sc-cancel").onclick = function() {
+    document.getElementById("shortcut-modal").classList.remove("active");
+  };
+
+  document.getElementById("sc-save").onclick = function() {
+    var name = document.getElementById("sc-name").value.trim();
+    var url = document.getElementById("sc-url").value.trim();
+    var icon = document.getElementById("sc-icon").value.trim();
+
+    if (!name || !url) {
+      alert("Name and URL are required");
+      return;
+    }
+
+    if (!url.startsWith("http")) url = "https://" + url;
+
+    var entry = { name: name, url: url, icon: icon || "fa-solid fa-globe" };
+
+    if (shortcutEditIndex >= 0) {
+      shortcuts[shortcutEditIndex] = entry;
+    } else {
+      shortcuts.push(entry);
+    }
+
+    saveShortcuts();
+    document.getElementById("shortcut-modal").classList.remove("active");
+
+    tabData.forEach(function(d) {
+      if (d.shortcutsContainer) renderShortcuts(d.shortcutsContainer, d);
+    });
+  };
+
+  // ---- TABS ----
+
+  function createNewTab(url) {
+    var id = ++tabId;
+
+    var tab = document.createElement("div");
+    tab.className = "tab";
+
+    var icon = document.createElement("span");
+    icon.className = "tab-icon";
+    icon.innerHTML = '<i class="fa-regular fa-window-maximize"></i>';
+
+    var title = document.createElement("span");
+    title.className = "title";
+    title.textContent = url ? url : "New Tab";
+
+    var close = document.createElement("button");
+    close.className = "close";
+    close.type = "button";
+    close.title = "Close tab";
+    close.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+
+    close.onclick = function(e) {
+      e.stopPropagation();
+      closeTab(id);
+    };
+
+    tab.appendChild(icon);
+    tab.appendChild(title);
+    tab.appendChild(close);
+
+    var iframe = document.createElement("iframe");
+    iframe.className = "view";
+    iframe.setAttribute("sandbox", "allow-same-origin allow-scripts allow-popups allow-forms allow-modals");
+
+    // New tab page
+    var newTabPage = document.createElement("div");
+    newTabPage.className = "new-tab-page";
+
+    var logo = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    logo.setAttribute("class", "new-tab-logo");
+    logo.setAttribute("viewBox", "0 0 60 20");
+    var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    rect.setAttribute("width", "100%");
+    rect.setAttribute("height", "100%");
+    rect.setAttribute("fill", "#000");
+    rect.setAttribute("rx", "4");
+    var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("x", "50%");
+    text.setAttribute("y", "55%");
+    text.setAttribute("fill", "#fff");
+    text.setAttribute("font-family", "system-ui,sans-serif");
+    text.setAttribute("font-size", "12");
+    text.setAttribute("font-weight", "600");
+    text.setAttribute("text-anchor", "middle");
+    text.setAttribute("dominant-baseline", "middle");
+    text.setAttribute("letter-spacing", "0.5");
+    text.textContent = "zaka";
+    logo.appendChild(rect);
+    logo.appendChild(text);
+
+    var shortcutsContainer = document.createElement("div");
+    shortcutsContainer.className = "shortcuts";
+
+    newTabPage.appendChild(logo);
+    newTabPage.appendChild(shortcutsContainer);
+
+    tab.onclick = function() { switchTab(id); };
+
+    tabs.insertBefore(tab, newTab);
+    views.appendChild(iframe);
+    views.appendChild(newTabPage);
+
+    var data = {
+      id: id,
+      tab: tab,
+      iframe: iframe,
+      title: title,
+      url: url || "",
+      frame: null,
+      newTabPage: newTabPage,
+      settingsPage: null,
+      shortcutsContainer: shortcutsContainer
+    };
+
+    tabData.set(id, data);
+
+    renderShortcuts(shortcutsContainer, data);
+
+    switchTab(id);
+
+    if (url) {
+      if (url === "education://settings") {
+        openSettingsPage(data);
+      } else {
+        hideNewTabPage(data);
+        doNavigate(url, id);
+      }
+    }
+
+    return id;
+  }
+
+  function hideNewTabPage(data) {
+    if (data.newTabPage) data.newTabPage.style.display = "none";
+  }
+
+  function showNewTabPage(data) {
+    if (data.newTabPage) data.newTabPage.style.display = "flex";
+  }
+
+  function switchTab(id) {
+    var data = tabData.get(id);
+    if (!data) return;
+
+    tabData.forEach(function(t) {
+      t.tab.classList.remove("active");
+      t.iframe.classList.remove("active");
+      if (t.newTabPage) t.newTabPage.style.display = "none";
+      if (t.settingsPage) t.settingsPage.classList.remove("active");
+    });
+
+    data.tab.classList.add("active");
+    activeTab = id;
+
+    if (data.url === "education://settings") {
+      openSettingsPage(data);
+    } else if (data.url) {
+      data.iframe.classList.add("active");
+      urlInput.value = data.url;
+      var si = document.getElementById("site-status");
+      if (si) si.innerHTML = '<i class="fa-solid fa-lock"></i>';
+    } else {
+      if (data.newTabPage) data.newTabPage.style.display = "flex";
+      urlInput.value = "";
+      var si2 = document.getElementById("site-status");
+      if (si2) si2.innerHTML = '<i class="fa-solid fa-globe"></i>';
+    }
+
+    renderTabs();
+  }
+
+  function renderTabs() {
+    // handled inline - no-op because tab elements are persistent
+  }
+
+  function closeTab(id) {
+    var data = tabData.get(id);
+    if (!data) return;
+
+    var wasActive = activeTab === id;
+
+    data.tab.remove();
+    data.iframe.remove();
+    if (data.newTabPage) data.newTabPage.remove();
+    if (data.settingsPage) data.settingsPage.remove();
+
+    tabData.delete(id);
+
+    if (tabData.size === 0) {
+      createNewTab();
+      return;
+    }
+
+    if (wasActive) {
+      var ids = Array.from(tabData.keys());
+      var index = ids.indexOf(id);
+      var newIndex = Math.max(0, index - 1);
+      switchTab(ids[newIndex]);
+    }
+  }
+
+  // ---- EVENTS ----
+
+  urlInput.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      var val = urlInput.value.trim();
+      if (!val) return;
+
+      var data = tabData.get(activeTab);
+      if (!data) return;
+
+      // Internal education:// pages
+      if (val === "education://settings" || val === "education://settings/") {
+        data.url = "education://settings";
+        data.title.textContent = "Settings";
+        openSettingsPage(data);
+        return;
+      }
+
+      if (val.startsWith("education://")) {
+        data.url = "education://settings";
+        data.title.textContent = "Settings";
+        openSettingsPage(data);
+        return;
+      }
+
+      var finalUrl = search(val, searchEngine);
+      data.url = finalUrl;
+      data.title.textContent = finalUrl.replace(/^https?:\/\//, '').split('/')[0] || val;
+
+      hideNewTabPage(data);
+      hideInternalPage(data);
+      doNavigate(finalUrl, activeTab);
+    }
+  });
+
+  newTab.onclick = function() { createNewTab(); };
+
+  back.onclick = function() {
+    var data = tabData.get(activeTab);
+    if (!data) return;
+    if (data.url === "education://settings") {
+      data.url = "";
+      data.title.textContent = "New Tab";
+      hideInternalPage(data);
+      showNewTabPage(data);
+      urlInput.value = "";
+      var si = document.getElementById("site-status");
+      if (si) si.innerHTML = '<i class="fa-solid fa-globe"></i>';
+      return;
+    }
+    if (!data.frame) return;
+    try { data.iframe.contentWindow.history.back(); } catch(e) {}
+  };
+
+  forward.onclick = function() {
+    var data = tabData.get(activeTab);
+    if (!data || !data.frame) return;
+    try { data.iframe.contentWindow.history.forward(); } catch(e) {}
+  };
+
+  reload.onclick = function() {
+    var data = tabData.get(activeTab);
+    if (!data) return;
+    if (data.url === "education://settings") {
+      openSettingsPage(data);
+    } else if (data.url) {
+      doNavigate(data.url, activeTab);
+    }
+  };
+
+  document.getElementById("star").onclick = function() {
+    var star = document.querySelector("#star i");
+    star.classList.toggle("fa-regular");
+    star.classList.toggle("fa-solid");
+  };
+
+  // Settings button now navigates to education://settings
+  document.getElementById("menu").onclick = function() {
+    var data = tabData.get(activeTab);
+    if (!data) return;
+    data.url = "education://settings";
+    data.title.textContent = "Settings";
+    openSettingsPage(data);
+  };
+
+  // ---- INIT ----
+  createNewTab();
+
+  setTimeout(function() {
+    initController().catch(function(err) {
+      console.error("Controller init failed:", err);
+    });
+  }, 500);
+
+})();
+</script>
+
+</body>
+</html>

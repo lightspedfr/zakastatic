@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Learning Portal</title>
+<title>Google Drive</title>
 
 <link rel="icon" href="https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -34,8 +34,6 @@ body{
   color:var(--text);
   font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 }
-
-/* TABS */
 
 #tabs{
   width:100%;
@@ -142,8 +140,6 @@ body{
   color:#fff;
 }
 
-/* TOOLBAR */
-
 form#idk{
   width:100%;
   height:48px;
@@ -182,8 +178,6 @@ form#idk{
 #forward i{
   transform:translateX(1px);
 }
-
-/* ADDRESS BAR */
 
 .address-bar{
   position:relative;
@@ -231,8 +225,6 @@ form#idk{
   display:block;
 }
 
-/* RIGHT SIDE */
-
 #right-tools{
   display:flex;
   align-items:center;
@@ -254,15 +246,11 @@ form#idk{
   color:#eee;
 }
 
-/* HIDDEN */
-
 #proxysel,
 #trans,
 #wispthingy{
   display:none;
 }
-
-/* CONTENT */
 
 #views{
   width:100%;
@@ -286,8 +274,6 @@ form#idk{
   display:block;
 }
 
-/* New tab page */
-
 .new-tab-page{
   width:100%;
   height:100%;
@@ -309,8 +295,6 @@ form#idk{
   margin-bottom:40px;
   flex-shrink:0;
 }
-
-/* Shortcuts */
 
 .shortcuts{
   display:grid;
@@ -373,8 +357,6 @@ form#idk{
 .shortcut:hover .shortcut-label{
   color:#ccc;
 }
-
-/* Internal education:// pages */
 
 .internal-page{
   width:100%;
@@ -541,8 +523,6 @@ form#idk{
   background:#2c2c2c;
 }
 
-/* Modal */
-
 .modal-overlay{
   display:none;
   position:fixed;
@@ -665,31 +645,22 @@ form#idk{
 
 <body>
 
-<!-- TABS -->
 <div id="tabs">
-
   <button id="new-tab" type="button" title="New tab">
     <i class="fa-solid fa-plus"></i>
   </button>
-
 </div>
 
-
-<!-- TOOLBAR -->
 <form id="idk">
-
   <button type="button" id="back" class="nav-btn" aria-label="Back" title="Back">
     <i class="fa-solid fa-chevron-left"></i>
   </button>
-
   <button type="button" id="forward" class="nav-btn" aria-label="Forward" title="Forward">
     <i class="fa-solid fa-chevron-right"></i>
   </button>
-
   <button type="button" id="reload" class="nav-btn" aria-label="Reload" title="Reload">
     <i class="fa-solid fa-rotate-right"></i>
   </button>
-
   <div class="address-bar">
     <span id="site-status">
       <i class="fa-solid fa-globe"></i>
@@ -703,7 +674,6 @@ form#idk{
       spellcheck="false"
     >
   </div>
-
   <div id="right-tools">
     <button type="button" class="toolbar-btn" id="star" title="Bookmark">
       <i class="fa-regular fa-star"></i>
@@ -712,17 +682,11 @@ form#idk{
       <i class="fa-solid fa-gear"></i>
     </button>
   </div>
-
   <select id="wispthingy"></select>
-
 </form>
 
-
-<!-- VIEWS -->
 <div id="views"></div>
 
-
-<!-- Shortcut edit modal -->
 <div class="modal-overlay" id="shortcut-modal">
   <div class="modal">
     <h3>Edit Shortcut</h3>
@@ -739,9 +703,7 @@ form#idk{
   </div>
 </div>
 
-
 <script>
-// Service worker registration
 (function() {
   var BASE_PATH = location.pathname.replace(/\/[^\/]*$/, "/");
   if (navigator.serviceWorker) {
@@ -785,13 +747,10 @@ form#idk{
   var activeTab = null;
   var tabData = new Map();
 
-  // Load saved settings
   var savedWisp = localStorage.getItem('zaka13_wisp_server');
   if (savedWisp && savedWisp.startsWith('wss://')) currentWisp = savedWisp;
   var savedSearch = localStorage.getItem('zaka13_search_engine');
   if (savedSearch) searchEngine = savedSearch;
-
-  // ---- SHORTCUTS (all placeholders for now) ----
 
   var defaultShortcuts = [
     { name: "YouTube",  url: "https://youtube.com",    icon: "fa-solid fa-globe" },
@@ -818,8 +777,6 @@ form#idk{
     try { localStorage.setItem('zaka13_shortcuts_v3', JSON.stringify(shortcuts)); } catch(e) {}
   }
 
-  // ---- INTERNAL PAGE BUILDER ----
-
   function buildSettingsPage(data) {
     var page = document.createElement("div");
     page.className = "internal-page";
@@ -827,7 +784,6 @@ form#idk{
     var container = document.createElement("div");
     container.className = "internal-container";
 
-    // Header
     var header = document.createElement("div");
     header.className = "internal-header";
 
@@ -836,7 +792,6 @@ form#idk{
     backBtn.type = "button";
     backBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
     backBtn.addEventListener("click", function() {
-      // Go back to new tab page
       data.url = "";
       data.title.textContent = "New Tab";
       hideInternalPage(data);
@@ -853,7 +808,6 @@ form#idk{
     header.appendChild(backBtn);
     header.appendChild(title);
 
-    // Network section
     var netSection = document.createElement("div");
     netSection.className = "internal-section";
 
@@ -880,7 +834,6 @@ form#idk{
     netSection.appendChild(netTitle);
     netSection.appendChild(wispRow);
 
-    // Search section
     var searchSection = document.createElement("div");
     searchSection.className = "internal-section";
 
@@ -917,7 +870,6 @@ form#idk{
     searchSection.appendChild(searchTitle);
     searchSection.appendChild(searchRow);
 
-    // Actions section
     var actionsSection = document.createElement("div");
     actionsSection.className = "internal-section";
 
@@ -950,7 +902,6 @@ form#idk{
       searchEngine = searchSel.value;
       localStorage.setItem('zaka13_search_engine', searchEngine);
 
-      // Small feedback
       saveBtn.textContent = "Saved";
       setTimeout(function() { saveBtn.textContent = "Save"; }, 1200);
     });
@@ -975,7 +926,6 @@ form#idk{
       tabData.forEach(function(d) {
         if (d.shortcutsContainer) renderShortcuts(d.shortcutsContainer, d);
       });
-      resetBtn.textContent = "Reset";
     });
 
     resetRow.appendChild(resetLeft);
@@ -1000,14 +950,12 @@ form#idk{
       data.settingsPage = buildSettingsPage(data);
       views.appendChild(data.settingsPage);
     } else {
-      // Refresh values
       var inputs = data.settingsPage.querySelectorAll(".internal-input");
       if (inputs[0]) inputs[0].value = currentWisp;
       var sels = data.settingsPage.querySelectorAll(".internal-select");
       if (sels[0]) sels[0].value = searchEngine;
     }
 
-    // Hide everything else
     tabData.forEach(function(t) {
       t.iframe.classList.remove("active");
       if (t.newTabPage) t.newTabPage.style.display = "none";
@@ -1026,14 +974,11 @@ form#idk{
     if (si) si.innerHTML = '<i class="fa-solid fa-gear"></i>';
 
     activeTab = data.id;
-    renderTabs();
   }
 
   function hideInternalPage(data) {
     if (data.settingsPage) data.settingsPage.classList.remove("active");
   }
-
-  // ---- SCRAMJET ----
 
   function search(input, template) {
     try { return new URL(input).toString(); } catch (e) {}
@@ -1087,7 +1032,6 @@ form#idk{
       await controller.wait();
 
       isControllerReady = true;
-      console.log("Controller initialized successfully");
 
       if (pendingNavigate) {
         var pn = pendingNavigate;
@@ -1115,7 +1059,6 @@ form#idk{
     var data = tabData.get(tabIdToUse);
     if (!data) return;
 
-    // Hide new tab & settings pages
     hideNewTabPage(data);
     hideInternalPage(data);
 
@@ -1152,8 +1095,6 @@ form#idk{
       setTimeout(function() { initController(); }, 1000);
     }
   }
-
-  // ---- SHORTCUT RENDER ----
 
   function renderShortcuts(container, data) {
     container.innerHTML = "";
@@ -1192,33 +1133,7 @@ form#idk{
 
       container.appendChild(btn);
     });
-
-    var addBtn = document.createElement("div");
-    addBtn.className = "shortcut";
-    addBtn.title = "Add shortcut";
-
-    var addIcon = document.createElement("div");
-    addIcon.className = "shortcut-icon";
-    var addI = document.createElement("i");
-    addI.className = "fa-solid fa-plus";
-    addI.style.color = "#666";
-    addIcon.appendChild(addI);
-
-    var addLabel = document.createElement("div");
-    addLabel.className = "shortcut-label";
-    addLabel.textContent = "Add";
-
-    addBtn.appendChild(addIcon);
-    addBtn.appendChild(addLabel);
-
-    addBtn.addEventListener("click", function() {
-      openShortcutEditor(-1, data);
-    });
-
-    container.appendChild(addBtn);
   }
-
-  // ---- SHORTCUT EDITOR ----
 
   var shortcutEditIndex = -1;
 
@@ -1263,8 +1178,6 @@ form#idk{
 
     if (shortcutEditIndex >= 0) {
       shortcuts[shortcutEditIndex] = entry;
-    } else {
-      shortcuts.push(entry);
     }
 
     saveShortcuts();
@@ -1274,8 +1187,6 @@ form#idk{
       if (d.shortcutsContainer) renderShortcuts(d.shortcutsContainer, d);
     });
   };
-
-  // ---- TABS ----
 
   function createNewTab(url) {
     var id = ++tabId;
@@ -1310,7 +1221,6 @@ form#idk{
     iframe.className = "view";
     iframe.setAttribute("sandbox", "allow-same-origin allow-scripts allow-popups allow-forms allow-modals");
 
-    // New tab page
     var newTabPage = document.createElement("div");
     newTabPage.className = "new-tab-page";
 
@@ -1413,12 +1323,6 @@ form#idk{
       var si2 = document.getElementById("site-status");
       if (si2) si2.innerHTML = '<i class="fa-solid fa-globe"></i>';
     }
-
-    renderTabs();
-  }
-
-  function renderTabs() {
-    // handled inline - no-op because tab elements are persistent
   }
 
   function closeTab(id) {
@@ -1447,8 +1351,6 @@ form#idk{
     }
   }
 
-  // ---- EVENTS ----
-
   urlInput.addEventListener("keydown", function(e) {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -1458,7 +1360,6 @@ form#idk{
       var data = tabData.get(activeTab);
       if (!data) return;
 
-      // Internal education:// pages
       if (val === "education://settings" || val === "education://settings/") {
         data.url = "education://settings";
         data.title.textContent = "Settings";
@@ -1524,7 +1425,6 @@ form#idk{
     star.classList.toggle("fa-solid");
   };
 
-  // Settings button now navigates to education://settings
   document.getElementById("menu").onclick = function() {
     var data = tabData.get(activeTab);
     if (!data) return;
@@ -1533,7 +1433,6 @@ form#idk{
     openSettingsPage(data);
   };
 
-  // ---- INIT ----
   createNewTab();
 
   setTimeout(function() {

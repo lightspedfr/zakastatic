@@ -1,4 +1,4 @@
-importScripts("./bG9scmF0aW9u/emFrYQ.js");
+importScripts("/bG9scmF0aW9u/emFrYQ.js");
 
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (e) => e.waitUntil(clients.claim()));

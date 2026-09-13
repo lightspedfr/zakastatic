@@ -187,7 +187,7 @@ form#idk{
   align-items:center;
 }
 
-.search-input{
+.english-input{
   width:100%;
   height:34px;
   padding:0 42px 0 38px;
@@ -199,16 +199,16 @@ form#idk{
   font-size:13px;
 }
 
-.search-input:hover{
+.english-input:hover{
   background:#202020;
 }
 
-.search-input:focus{
+.english-input:focus{
   background:#202020;
   border-color:#444;
 }
 
-.search-input::placeholder{
+.english-input::placeholder{
   color:#666;
 }
 
@@ -246,9 +246,9 @@ form#idk{
   color:#eee;
 }
 
-#proxysel,
+#edusel,
 #trans,
-#wispthingy{
+#studythingy{
   display:none;
 }
 
@@ -668,8 +668,8 @@ form#idk{
     <input
       id="url"
       type="text"
-      class="search-input"
-      placeholder="Search or enter URL"
+      class="english-input"
+      placeholder="english or enter URL"
       autocomplete="off"
       spellcheck="false"
     >
@@ -682,7 +682,7 @@ form#idk{
       <i class="fa-solid fa-gear"></i>
     </button>
   </div>
-  <select id="wispthingy"></select>
+  <select id="studythingy"></select>
 </form>
 
 <div id="views"></div>
@@ -740,28 +740,20 @@ form#idk{
   var isControllerReady = false;
   var initAttempts = 0;
   var pendingNavigate = null;
-  var currentWisp = 'wss://' + window.location.host + '/api/';
-  var searchEngine = "https://www.google.com/search?q=%s";
+  var currentstudy = 'wss://' + window.location.host + '/api/';
+  var englishEngine = "https://www.google.com/search?q=%s";
 
   var tabId = 0;
   var activeTab = null;
   var tabData = new Map();
 
-  var savedWisp = localStorage.getItem('zaka13_wisp_server');
-  if (savedWisp && savedWisp.startsWith('wss://')) currentWisp = savedWisp;
-  var savedSearch = localStorage.getItem('zaka13_search_engine');
-  if (savedSearch) searchEngine = savedSearch;
+  var savedstudy = localStorage.getItem('zaka13_study_server');
+  if (savedstudy && savedstudy.startsWith('wss://')) currentstudy = savedstudy;
+  var savedenglish = localStorage.getItem('zaka13_english_engine');
+  if (savedenglish) englishEngine = savedenglish;
 
   var defaultShortcuts = [
-    { name: "YouTube",  url: "https://youtube.com",    icon: "fa-solid fa-globe" },
-    { name: "GitHub",   url: "https://github.com",     icon: "fa-solid fa-globe" },
-    { name: "Discord",  url: "https://discord.com",    icon: "fa-solid fa-globe" },
-    { name: "Twitter",  url: "https://twitter.com",    icon: "fa-solid fa-globe" },
-    { name: "Reddit",   url: "https://reddit.com",     icon: "fa-solid fa-globe" },
-    { name: "Spotify",  url: "https://spotify.com",    icon: "fa-solid fa-globe" },
-    { name: "Netflix",  url: "https://netflix.com",    icon: "fa-solid fa-globe" },
-    { name: "Twitch",   url: "https://twitch.tv",      icon: "fa-solid fa-globe" },
-    { name: "Gmail",    url: "https://mail.google.com",icon: "fa-solid fa-globe" }
+    
   ];
 
   var shortcuts = [];
@@ -815,60 +807,60 @@ form#idk{
     netTitle.className = "internal-section-title";
     netTitle.textContent = "Network";
 
-    var wispRow = document.createElement("div");
-    wispRow.className = "internal-row";
+    var studyRow = document.createElement("div");
+    studyRow.className = "internal-row";
 
-    var wispLeft = document.createElement("div");
-    wispLeft.className = "internal-row-left";
-    wispLeft.innerHTML = '<div class="internal-row-title">wisp</div><div class="internal-row-desc">self explanitory</div>';
+    var studyLeft = document.createElement("div");
+    studyLeft.className = "internal-row-left";
+    studyLeft.innerHTML = '<div class="internal-row-title">study</div><div class="internal-row-desc">self explanitory</div>';
 
-    var wispIn = document.createElement("input");
-    wispIn.className = "internal-input";
-    wispIn.type = "text";
-    wispIn.value = currentWisp;
-    wispIn.placeholder = "wss://wisp.example.com/api/";
+    var studyIn = document.createElement("input");
+    studyIn.className = "internal-input";
+    studyIn.type = "text";
+    studyIn.value = currentstudy;
+    studyIn.placeholder = "wss://study.example.com/api/";
 
-    wispRow.appendChild(wispLeft);
-    wispRow.appendChild(wispIn);
+    studyRow.appendChild(studyLeft);
+    studyRow.appendChild(studyIn);
 
     netSection.appendChild(netTitle);
-    netSection.appendChild(wispRow);
+    netSection.appendChild(studyRow);
 
-    var searchSection = document.createElement("div");
-    searchSection.className = "internal-section";
+    var englishSection = document.createElement("div");
+    englishSection.className = "internal-section";
 
-    var searchTitle = document.createElement("div");
-    searchTitle.className = "internal-section-title";
-    searchTitle.textContent = "Search";
+    var englishTitle = document.createElement("div");
+    englishTitle.className = "internal-section-title";
+    englishTitle.textContent = "english";
 
-    var searchRow = document.createElement("div");
-    searchRow.className = "internal-row";
+    var englishRow = document.createElement("div");
+    englishRow.className = "internal-row";
 
-    var searchLeft = document.createElement("div");
-    searchLeft.className = "internal-row-left";
-    searchLeft.innerHTML = '<div class="internal-row-title">search engine</div><div class="internal-row-desc"></div>';
+    var englishLeft = document.createElement("div");
+    englishLeft.className = "internal-row-left";
+    englishLeft.innerHTML = '<div class="internal-row-title">english engine</div><div class="internal-row-desc"></div>';
 
-    var searchSel = document.createElement("select");
-    searchSel.className = "internal-select";
+    var englishSel = document.createElement("select");
+    englishSel.className = "internal-select";
     var engines = [
-      { v: "https://www.google.com/search?q=%s", n: "Google" },
-      { v: "https://www.bing.com/search?q=%s", n: "Bing" },
+      { v: "https://www.google.com/english?q=%s", n: "Google" },
+      { v: "https://www.bing.com/english?q=%s", n: "Bing" },
       { v: "https://duckduckgo.com/?q=%s", n: "DuckDuckGo" },
-      { v: "https://search.brave.com/search?q=%s", n: "Brave" }
+      { v: "https://english.brave.com/english?q=%s", n: "Brave" }
     ];
     engines.forEach(function(e) {
       var opt = document.createElement("option");
       opt.value = e.v;
       opt.textContent = e.n;
-      if (e.v === searchEngine) opt.selected = true;
-      searchSel.appendChild(opt);
+      if (e.v === englishEngine) opt.selected = true;
+      englishSel.appendChild(opt);
     });
 
-    searchRow.appendChild(searchLeft);
-    searchRow.appendChild(searchSel);
+    englishRow.appendChild(englishLeft);
+    englishRow.appendChild(englishSel);
 
-    searchSection.appendChild(searchTitle);
-    searchSection.appendChild(searchRow);
+    englishSection.appendChild(englishTitle);
+    englishSection.appendChild(englishRow);
 
     var actionsSection = document.createElement("div");
     actionsSection.className = "internal-section";
@@ -889,18 +881,18 @@ form#idk{
     saveBtn.type = "button";
     saveBtn.textContent = "Save";
     saveBtn.addEventListener("click", function() {
-      var newWisp = wispIn.value.trim();
-      if (newWisp && newWisp.startsWith('wss://')) {
-        currentWisp = newWisp;
-        localStorage.setItem('zaka13_wisp_server', newWisp);
+      var newstudy = studyIn.value.trim();
+      if (newstudy && newstudy.startsWith('wss://')) {
+        currentstudy = newstudy;
+        localStorage.setItem('zaka13_study_server', newstudy);
         isControllerReady = false;
         controller = null;
         tabData.forEach(function(d) { d.frame = null; });
         initController();
       }
 
-      searchEngine = searchSel.value;
-      localStorage.setItem('zaka13_search_engine', searchEngine);
+      englishEngine = englishSel.value;
+      localStorage.setItem('zaka13_english_engine', englishEngine);
 
       saveBtn.textContent = "Saved";
       setTimeout(function() { saveBtn.textContent = "Save"; }, 1200);
@@ -937,7 +929,7 @@ form#idk{
 
     container.appendChild(header);
     container.appendChild(netSection);
-    container.appendChild(searchSection);
+    container.appendChild(englishSection);
     container.appendChild(actionsSection);
 
     page.appendChild(container);
@@ -951,9 +943,9 @@ form#idk{
       views.appendChild(data.settingsPage);
     } else {
       var inputs = data.settingsPage.querySelectorAll(".internal-input");
-      if (inputs[0]) inputs[0].value = currentWisp;
+      if (inputs[0]) inputs[0].value = currentstudy;
       var sels = data.settingsPage.querySelectorAll(".internal-select");
-      if (sels[0]) sels[0].value = searchEngine;
+      if (sels[0]) sels[0].value = englishEngine;
     }
 
     tabData.forEach(function(t) {
@@ -980,7 +972,7 @@ form#idk{
     if (data.settingsPage) data.settingsPage.classList.remove("active");
   }
 
-  function search(input, template) {
+  function english(input, template) {
     try { return new URL(input).toString(); } catch (e) {}
     try {
       var url = new URL("http://" + input);
@@ -1022,7 +1014,7 @@ form#idk{
       cfg.prefix = BASE_PATH + 'cFKBd/auth/login/token/';
 
       var transport = new window.LibcurlTransport.LibcurlClient({
-        wisp: currentWisp,
+        study: currentstudy,
       });
 
       controller = new Ctrl({
@@ -1374,7 +1366,7 @@ form#idk{
         return;
       }
 
-      var finalUrl = search(val, searchEngine);
+      var finalUrl = english(val, englishEngine);
       data.url = finalUrl;
       data.title.textContent = finalUrl.replace(/^https?:\/\//, '').split('/')[0] || val;
 

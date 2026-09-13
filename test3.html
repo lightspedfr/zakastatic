@@ -35,7 +35,7 @@ body{
   font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 }
 
-#tabs{
+#t{
   width:100%;
   height:42px;
   display:flex;
@@ -246,20 +246,20 @@ form#idk{
   color:#eee;
 }
 
-#proxysel,
+#67sel,
 #trans,
 #wispthingy{
   display:none;
 }
 
-#views{
+#tts{
   width:100%;
   height:calc(100vh - 90px);
   background:#000;
   position:relative;
 }
 
-.view{
+.tt{
   width:100%;
   height:100%;
   display:none;
@@ -270,7 +270,7 @@ form#idk{
   left:0;
 }
 
-.view.active{
+.tt.active{
   display:block;
 }
 
@@ -645,7 +645,7 @@ form#idk{
 
 <body>
 
-<div id="tabs">
+<div id="t">
   <button id="new-tab" type="button" title="New tab">
     <i class="fa-solid fa-plus"></i>
   </button>
@@ -685,7 +685,7 @@ form#idk{
   <select id="wispthingy"></select>
 </form>
 
-<div id="views"></div>
+<div id="tts"></div>
 
 <div class="modal-overlay" id="shortcut-modal">
   <div class="modal">
@@ -728,8 +728,8 @@ form#idk{
   "use strict";
 
   var BASE_PATH = location.pathname.replace(/\/[^\/]*$/, "/");
-  var tabs = document.getElementById("tabs");
-  var views = document.getElementById("views");
+  var t = document.getElementById("t");
+  var tts = document.getElementById("tts");
   var urlInput = document.getElementById("url");
   var newTab = document.getElementById("new-tab");
   var back = document.getElementById("back");
@@ -948,7 +948,7 @@ form#idk{
   function openSettingsPage(data) {
     if (!data.settingsPage) {
       data.settingsPage = buildSettingsPage(data);
-      views.appendChild(data.settingsPage);
+      tts.appendChild(data.settingsPage);
     } else {
       var inputs = data.settingsPage.querySelectorAll(".internal-input");
       if (inputs[0]) inputs[0].value = currentWisp;
@@ -1218,7 +1218,7 @@ form#idk{
     tab.appendChild(close);
 
     var iframe = document.createElement("iframe");
-    iframe.className = "view";
+    iframe.className = "tt";
     iframe.setAttribute("sandbox", "allow-same-origin allow-scripts allow-popups allow-forms allow-modals");
 
     var newTabPage = document.createElement("div");
@@ -1226,7 +1226,7 @@ form#idk{
 
     var logo = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     logo.setAttribute("class", "new-tab-logo");
-    logo.setAttribute("viewBox", "0 0 60 20");
+    logo.setAttribute("ttBox", "0 0 60 20");
     var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     rect.setAttribute("width", "100%");
     rect.setAttribute("height", "100%");
@@ -1254,9 +1254,9 @@ form#idk{
 
     tab.onclick = function() { switchTab(id); };
 
-    tabs.insertBefore(tab, newTab);
-    views.appendChild(iframe);
-    views.appendChild(newTabPage);
+    t.insertBefore(tab, newTab);
+    tts.appendChild(iframe);
+    tts.appendChild(newTabPage);
 
     var data = {
       id: id,

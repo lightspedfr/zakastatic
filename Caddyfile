@@ -4,31 +4,27 @@
     }
 }
 
-# 1. Global HTTPS Block (Handles all valid production domains)
+# 1. HTTPS
 :443 {
-    # Match long hosts (61+ chars) using native header regex matching
     @tooLong header_regexp Host ^.{61,}$
 
-    # Match suspicious phishing strings inside the domain name
     @hasSus {
         header Host *whm*
         header Host *cpanel*
         header Host *login*
     }
 
-    # Block long subdomains instantly
     handle @tooLong {
         header Content-Type "text/plain"
         respond "this link was disabled bc you generated a malware, sus, or just down right bad subdomain, stop abusing my BYOD system, this is to generate good links, NOT WHM EXPLOITS" 493
     }
 
-    # Block suspicious keywords instantly
     handle @hasSus {
         header Content-Type "text/plain"
         respond "this link was disabled bc you generated a malware, sus, or just down right bad subdomain, stop abusing my BYOD system, this is to generate good links, NOT WHM EXPLOITS" 493
     }
 
-    # Match /api and anything after it, then proxy to localhost:3000/wisp/
+    # /api -> localhost:3000/wisp/
     handle /api* {
         uri strip_prefix /api
         rewrite * /wisp{uri}
@@ -43,7 +39,7 @@
         }
     }
 
-    # Match /wisp and /wisp/* to properly capture all client handshakes
+    # /wisp -> localhost:3000
     handle /wisp* {
         reverse_proxy localhost:3000 {
             header_up Host {upstream_host_port}
@@ -55,17 +51,42 @@
         }
     }
 
-    # Static file fallback
-    # If the requested file does not exist, serve /404.html
+    # zaka.is-a.bot: / -> /bot.html
+    @botRoot {
+        host zaka.is-a.bot
+        path /
+    }
+
+    handle @botRoot {
+        rewrite * /bot.html
+        root * /usr/share/caddy
+        file_server
+    }
+
+    # All other domains: / -> /index.html
+    @root {
+        path /
+    }
+
+    handle @root {
+        rewrite * /index.html
+        root * /usr/share/caddy
+        file_server
+    }
+
+    # Normal static files
     handle {
         root * /usr/share/caddy
+        file_server
+    }
 
-        @notFound {
-            not file
-        }
+    # If file_server generates a 404, use the custom error handler
+    handle_errors {
+        @custom404 expression `{http.error.status_code} == 404`
 
-        rewrite @notFound /404.html
+        rewrite @custom404 /404.html
 
+        root * /usr/share/caddy
         file_server
     }
 
@@ -74,33 +95,31 @@
     }
 }
 
-# 2. HTTP Block with Conditional 301 Redirect
+# 2. HTTP
 :80 {
-    # Match requests that are NOT localhost or 127.0.0.1
     @notLocalhost {
         not header Host localhost*
         not header Host 127.0.0.1*
     }
 
-    # Redirect non-local traffic to HTTPS
     redir @notLocalhost https://{host}{uri} permanent
 
-    # Local traffic fallback
-    # Avoids redirect loops for local checks
     handle {
         root * /usr/share/caddy
+        file_server
+    }
 
-        @notFound {
-            not file
-        }
+    handle_errors {
+        @custom404 expression `{http.error.status_code} == 404`
 
-        rewrite @notFound /404.html
+        rewrite @custom404 /404.html
 
+        root * /usr/share/caddy
         file_server
     }
 }
 
-# 3. Internal Check Block
+# 3. Internal Check
 http://localhost {
     respond /internal-check 200
 }

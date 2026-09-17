@@ -28,12 +28,14 @@
         respond "this link was disabled bc you generated a malware, sus, or just down right bad subdomain, stop abusing my BYOD system, this is to generate good links, NOT WHM EXPLOITS" 493
     }
 
-    # NEW: Match /api and anything after it, then proxy to localhost:3000/wisp/
+    # Match /api and anything after it, then proxy to localhost:3000/wisp/
     handle /api* {
         uri strip_prefix /api
         rewrite * /wisp{uri}
+
         reverse_proxy localhost:3000 {
             header_up Host {upstream_host_port}
+
             transport http {
                 read_timeout 0
                 write_timeout 0
@@ -45,6 +47,7 @@
     handle /wisp* {
         reverse_proxy localhost:3000 {
             header_up Host {upstream_host_port}
+
             transport http {
                 read_timeout 0
                 write_timeout 0
@@ -53,8 +56,16 @@
     }
 
     # Static file fallback
+    # If the requested file does not exist, serve /404.html
     handle {
         root * /usr/share/caddy
+
+        @notFound {
+            not file
+        }
+
+        rewrite @notFound /404.html
+
         file_server
     }
 
@@ -74,9 +85,17 @@
     # Redirect non-local traffic to HTTPS
     redir @notLocalhost https://{host}{uri} permanent
 
-    # Local traffic fallback (avoids redirect loops for local checks)
+    # Local traffic fallback
+    # Avoids redirect loops for local checks
     handle {
         root * /usr/share/caddy
+
+        @notFound {
+            not file
+        }
+
+        rewrite @notFound /404.html
+
         file_server
     }
 }

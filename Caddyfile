@@ -4,7 +4,38 @@
     }
 }
 
-# 1. HTTPS
+# ============================================================
+# CloudFront HTTP-only host
+# ============================================================
+http://d1vajlb5xnngpm.cloudfront.net {
+    root * /usr/share/caddy
+
+    # / -> /index.html
+    @root path /
+
+    handle @root {
+        rewrite * /index.html
+        file_server
+    }
+
+    # All other static paths
+    handle {
+        file_server
+    }
+
+    # Custom 404 page with actual 404 status
+    handle_errors {
+        @notFound expression `{http.error.status_code} == 404`
+
+        rewrite @notFound /404.html
+        file_server
+    }
+}
+
+
+# ============================================================
+# HTTPS
+# ============================================================
 :443 {
     # Match long hosts (61+ characters)
     @tooLong header_regexp Host ^.{61,}$
@@ -28,7 +59,9 @@
         respond "this link was disabled bc you generated a malware, sus, or just down right bad subdomain, stop abusing my BYOD system, this is to generate good links, NOT WHM EXPLOITS" 493
     }
 
+    # --------------------------------------------------------
     # /api -> localhost:3000/wisp/
+    # --------------------------------------------------------
     handle /api* {
         uri strip_prefix /api
         rewrite * /wisp{uri}
@@ -43,7 +76,9 @@
         }
     }
 
+    # --------------------------------------------------------
     # /wisp -> localhost:3000
+    # --------------------------------------------------------
     handle /wisp* {
         reverse_proxy localhost:3000 {
             header_up Host {upstream_host_port}
@@ -55,7 +90,9 @@
         }
     }
 
-    # zaka.is-a.bot: / -> /bot.html
+    # --------------------------------------------------------
+    # zaka.is-a.bot -> /bot.html
+    # --------------------------------------------------------
     @botRoot {
         host zaka.is-a.bot
         path /
@@ -67,7 +104,9 @@
         file_server
     }
 
-    # All other domains: / -> /index.html
+    # --------------------------------------------------------
+    # All other domains -> /index.html
+    # --------------------------------------------------------
     @root {
         path /
     }
@@ -78,17 +117,21 @@
         file_server
     }
 
+    # --------------------------------------------------------
     # Normal static files
+    # --------------------------------------------------------
     handle {
         root * /usr/share/caddy
         file_server
     }
 
-    # Custom 404 page while preserving the 404 status
+    # --------------------------------------------------------
+    # Custom 404
+    # --------------------------------------------------------
     handle_errors {
-        @custom404 expression `{http.error.status_code} == 404`
+        @notFound expression `{http.error.status_code} == 404`
 
-        rewrite @custom404 /404.html
+        rewrite @notFound /404.html
 
         root * /usr/share/caddy
         file_server
@@ -99,57 +142,38 @@
     }
 }
 
-# 2. HTTP
+
+# ============================================================
+# Normal HTTP
+# ============================================================
 :80 {
-    # CloudFront is explicitly allowed to remain on HTTP
-    @cloudfront {
-        host d1vajlb5xnngpm.cloudfront.net
+    # Localhost is allowed to stay HTTP
+    @localhost {
+        header Host localhost*
     }
 
-    # Serve CloudFront HTTP requests without redirecting them
-    handle @cloudfront {
-        root * /usr/share/caddy
-
-        @cloudfrontRoot {
-            path /
-        }
-
-        handle @cloudfrontRoot {
-            rewrite * /index.html
-            file_server
-        }
-
-        handle {
-            file_server
-        }
-    }
-
-    # Everything else that isn't localhost gets redirected to HTTPS
-    @notLocalhost {
-        not header Host localhost*
-        not header Host 127.0.0.1*
-    }
-
-    redir @notLocalhost https://{host}{uri} permanent
-
-    # Local HTTP traffic
-    handle {
+    handle @localhost {
         root * /usr/share/caddy
         file_server
     }
 
-    # Custom 404 page while preserving the 404 status
-    handle_errors {
-        @custom404 expression `{http.error.status_code} == 404`
+    @localhostIP {
+        header Host 127.0.0.1*
+    }
 
-        rewrite @custom404 /404.html
-
+    handle @localhostIP {
         root * /usr/share/caddy
         file_server
     }
+
+    # Everything else gets redirected to HTTPS
+    redir https://{host}{uri} permanent
 }
 
-# 3. Internal Check
+
+# ============================================================
+# Internal Check
+# ============================================================
 http://localhost {
     respond /internal-check 200
 }

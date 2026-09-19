@@ -8,6 +8,33 @@
 # CloudFront HTTP-only host
 # ============================================================
 http://d1vajlb5xnngpm.cloudfront.net {
+    # /api -> localhost:3000/wisp/
+    handle /api* {
+        uri strip_prefix /api
+        rewrite * /wisp{uri}
+
+        reverse_proxy localhost:3000 {
+            header_up Host {upstream_host_port}
+
+            transport http {
+                read_timeout 0
+                write_timeout 0
+            }
+        }
+    }
+
+    # /wisp -> localhost:3000
+    handle /wisp* {
+        reverse_proxy localhost:3000 {
+            header_up Host {upstream_host_port}
+
+            transport http {
+                read_timeout 0
+                write_timeout 0
+            }
+        }
+    }
+
     root * /usr/share/caddy
 
     # / -> /index.html
@@ -18,12 +45,12 @@ http://d1vajlb5xnngpm.cloudfront.net {
         file_server
     }
 
-    # All other static paths
+    # Normal static files
     handle {
         file_server
     }
 
-    # Custom 404 page with actual 404 status
+    # Custom 404 with actual 404 status
     handle_errors {
         @notFound expression `{http.error.status_code} == 404`
 
@@ -59,9 +86,7 @@ http://d1vajlb5xnngpm.cloudfront.net {
         respond "this link was disabled bc you generated a malware, sus, or just down right bad subdomain, stop abusing my BYOD system, this is to generate good links, NOT WHM EXPLOITS" 493
     }
 
-    # --------------------------------------------------------
     # /api -> localhost:3000/wisp/
-    # --------------------------------------------------------
     handle /api* {
         uri strip_prefix /api
         rewrite * /wisp{uri}
@@ -76,9 +101,7 @@ http://d1vajlb5xnngpm.cloudfront.net {
         }
     }
 
-    # --------------------------------------------------------
     # /wisp -> localhost:3000
-    # --------------------------------------------------------
     handle /wisp* {
         reverse_proxy localhost:3000 {
             header_up Host {upstream_host_port}
@@ -90,9 +113,7 @@ http://d1vajlb5xnngpm.cloudfront.net {
         }
     }
 
-    # --------------------------------------------------------
     # zaka.is-a.bot -> /bot.html
-    # --------------------------------------------------------
     @botRoot {
         host zaka.is-a.bot
         path /
@@ -104,9 +125,7 @@ http://d1vajlb5xnngpm.cloudfront.net {
         file_server
     }
 
-    # --------------------------------------------------------
     # All other domains -> /index.html
-    # --------------------------------------------------------
     @root {
         path /
     }
@@ -117,17 +136,13 @@ http://d1vajlb5xnngpm.cloudfront.net {
         file_server
     }
 
-    # --------------------------------------------------------
     # Normal static files
-    # --------------------------------------------------------
     handle {
         root * /usr/share/caddy
         file_server
     }
 
-    # --------------------------------------------------------
-    # Custom 404
-    # --------------------------------------------------------
+    # Custom 404 with actual 404 status
     handle_errors {
         @notFound expression `{http.error.status_code} == 404`
 
@@ -147,7 +162,7 @@ http://d1vajlb5xnngpm.cloudfront.net {
 # Normal HTTP
 # ============================================================
 :80 {
-    # Localhost is allowed to stay HTTP
+    # Localhost is allowed to remain HTTP
     @localhost {
         header Host localhost*
     }
@@ -166,7 +181,7 @@ http://d1vajlb5xnngpm.cloudfront.net {
         file_server
     }
 
-    # Everything else gets redirected to HTTPS
+    # Everything else redirects to HTTPS
     redir https://{host}{uri} permanent
 }
 

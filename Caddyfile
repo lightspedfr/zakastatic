@@ -168,26 +168,8 @@ http://d1vajlb5xnngpm.cloudfront.net {
 }
 
 :80 {
-    @localhost {
-        header Host localhost*
-    }
-
-    handle @localhost {
-        root * /usr/share/caddy
-        file_server
-    }
-
-    @localhostIP {
-        header Host 127.0.0.1*
-    }
-
-    handle @localhostIP {
-        root * /usr/share/caddy
-        file_server
-    }
-
     @cloudfront {
-        header Host d1vajlb5xnngpm.cloudfront.net
+        host d1vajlb5xnngpm.cloudfront.net
     }
 
     handle @cloudfront {
@@ -226,6 +208,51 @@ http://d1vajlb5xnngpm.cloudfront.net {
             root * /usr/share/caddy
             file_server
         }
+    }
+
+    @localhost {
+        header Host localhost*
+    }
+
+    handle @localhost {
+        root * /usr/share/caddy
+        file_server
+    }
+
+    @localhostIP {
+        header Host 127.0.0.1*
+    }
+
+    handle @localhostIP {
+        root * /usr/share/caddy
+        file_server
+    }
+
+    @private10 {
+        header Host 10.*
+    }
+
+    handle @private10 {
+        root * /usr/share/caddy
+        file_server
+    }
+
+    @private192 {
+        header Host 192.168.*
+    }
+
+    handle @private192 {
+        root * /usr/share/caddy
+        file_server
+    }
+
+    @private172 {
+        header_regexp Host ^172\.(1[6-9]|2[0-9]|3[0-1])\.
+    }
+
+    handle @private172 {
+        root * /usr/share/caddy
+        file_server
     }
 
     redir https://{host}{uri} permanent

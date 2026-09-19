@@ -4,11 +4,7 @@
     }
 }
 
-# ============================================================
-# CloudFront HTTP-only host
-# ============================================================
 http://d1vajlb5xnngpm.cloudfront.net {
-    # /api -> localhost:3000/wisp/
     handle /api* {
         uri strip_prefix /api
         rewrite * /wisp{uri}
@@ -23,7 +19,6 @@ http://d1vajlb5xnngpm.cloudfront.net {
         }
     }
 
-    # /wisp -> localhost:3000
     handle /wisp* {
         reverse_proxy localhost:3000 {
             header_up Host {upstream_host_port}
@@ -37,7 +32,6 @@ http://d1vajlb5xnngpm.cloudfront.net {
 
     root * /usr/share/caddy
 
-    # / -> /index.html
     @root path /
 
     handle @root {
@@ -45,48 +39,84 @@ http://d1vajlb5xnngpm.cloudfront.net {
         file_server
     }
 
-    # Normal static files
     handle {
         file_server
     }
 
-    # Custom 404 with actual 404 status
     handle_errors {
-        @notFound expression `{http.error.status_code} == 404`
-
-        rewrite @notFound /404.html
+        rewrite * /404.html
         file_server
     }
 }
 
-
-# ============================================================
-# HTTPS
-# ============================================================
 :443 {
-    # Match long hosts (61+ characters)
     @tooLong header_regexp Host ^.{61,}$
 
-    # Match suspicious phishing strings
     @hasSus {
         header Host *whm*
         header Host *cpanel*
         header Host *login*
     }
 
-    # Block long subdomains
     handle @tooLong {
         header Content-Type "text/plain"
         respond "this link was disabled bc you generated a malware, sus, or just down right bad subdomain, stop abusing my BYOD system, this is to generate good links, NOT WHM EXPLOITS" 493
     }
 
-    # Block suspicious keywords
     handle @hasSus {
         header Content-Type "text/plain"
         respond "this link was disabled bc you generated a malware, sus, or just down right bad subdomain, stop abusing my BYOD system, this is to generate good links, NOT WHM EXPLOITS" 493
     }
 
-    # /api -> localhost:3000/wisp/
+    @cloudfront {
+        host d1vajlb5xnngpm.cloudfront.net
+    }
+
+    handle @cloudfront {
+        handle /api* {
+            uri strip_prefix /api
+            rewrite * /wisp{uri}
+
+            reverse_proxy localhost:3000 {
+                header_up Host {upstream_host_port}
+
+                transport http {
+                    read_timeout 0
+                    write_timeout 0
+                }
+            }
+        }
+
+        handle /wisp* {
+            reverse_proxy localhost:3000 {
+                header_up Host {upstream_host_port}
+
+                transport http {
+                    read_timeout 0
+                    write_timeout 0
+                }
+            }
+        }
+
+        root * /usr/share/caddy
+
+        @cloudfrontRoot path /
+
+        handle @cloudfrontRoot {
+            rewrite * /index.html
+            file_server
+        }
+
+        handle {
+            file_server
+        }
+
+        handle_errors {
+            rewrite * /404.html
+            file_server
+        }
+    }
+
     handle /api* {
         uri strip_prefix /api
         rewrite * /wisp{uri}
@@ -101,7 +131,6 @@ http://d1vajlb5xnngpm.cloudfront.net {
         }
     }
 
-    # /wisp -> localhost:3000
     handle /wisp* {
         reverse_proxy localhost:3000 {
             header_up Host {upstream_host_port}
@@ -113,7 +142,6 @@ http://d1vajlb5xnngpm.cloudfront.net {
         }
     }
 
-    # zaka.is-a.bot -> /bot.html
     @botRoot {
         host zaka.is-a.bot
         path /
@@ -125,7 +153,6 @@ http://d1vajlb5xnngpm.cloudfront.net {
         file_server
     }
 
-    # All other domains -> /index.html
     @root {
         path /
     }
@@ -136,19 +163,13 @@ http://d1vajlb5xnngpm.cloudfront.net {
         file_server
     }
 
-    # Normal static files
     handle {
         root * /usr/share/caddy
         file_server
     }
 
-    # Custom 404 with actual 404 status
     handle_errors {
-        @notFound expression `{http.error.status_code} == 404`
-
-        rewrite @notFound /404.html
-
-        root * /usr/share/caddy
+        rewrite * /404.html
         file_server
     }
 
@@ -157,12 +178,7 @@ http://d1vajlb5xnngpm.cloudfront.net {
     }
 }
 
-
-# ============================================================
-# Normal HTTP
-# ============================================================
 :80 {
-    # Localhost is allowed to remain HTTP
     @localhost {
         header Host localhost*
     }
@@ -181,14 +197,58 @@ http://d1vajlb5xnngpm.cloudfront.net {
         file_server
     }
 
-    # Everything else redirects to HTTPS
+    @cloudfront {
+        header Host d1vajlb5xnngpm.cloudfront.net
+    }
+
+    handle @cloudfront {
+        handle /api* {
+            uri strip_prefix /api
+            rewrite * /wisp{uri}
+
+            reverse_proxy localhost:3000 {
+                header_up Host {upstream_host_port}
+
+                transport http {
+                    read_timeout 0
+                    write_timeout 0
+                }
+            }
+        }
+
+        handle /wisp* {
+            reverse_proxy localhost:3000 {
+                header_up Host {upstream_host_port}
+
+                transport http {
+                    read_timeout 0
+                    write_timeout 0
+                }
+            }
+        }
+
+        root * /usr/share/caddy
+
+        @root path /
+
+        handle @root {
+            rewrite * /index.html
+            file_server
+        }
+
+        handle {
+            file_server
+        }
+
+        handle_errors {
+            rewrite * /404.html
+            file_server
+        }
+    }
+
     redir https://{host}{uri} permanent
 }
 
-
-# ============================================================
-# Internal Check
-# ============================================================
 http://localhost {
     respond /internal-check 200
 }

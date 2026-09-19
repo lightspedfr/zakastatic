@@ -6,19 +6,23 @@
 
 # 1. HTTPS
 :443 {
+    # Match long hosts (61+ characters)
     @tooLong header_regexp Host ^.{61,}$
 
+    # Match suspicious phishing strings
     @hasSus {
         header Host *whm*
         header Host *cpanel*
         header Host *login*
     }
 
+    # Block long subdomains
     handle @tooLong {
         header Content-Type "text/plain"
         respond "this link was disabled bc you generated a malware, sus, or just down right bad subdomain, stop abusing my BYOD system, this is to generate good links, NOT WHM EXPLOITS" 493
     }
 
+    # Block suspicious keywords
     handle @hasSus {
         header Content-Type "text/plain"
         respond "this link was disabled bc you generated a malware, sus, or just down right bad subdomain, stop abusing my BYOD system, this is to generate good links, NOT WHM EXPLOITS" 493
@@ -80,7 +84,7 @@
         file_server
     }
 
-    # If file_server generates a 404, use the custom error handler
+    # Custom 404 page while preserving the 404 status
     handle_errors {
         @custom404 expression `{http.error.status_code} == 404`
 
@@ -97,6 +101,30 @@
 
 # 2. HTTP
 :80 {
+    # CloudFront is explicitly allowed to remain on HTTP
+    @cloudfront {
+        host d1vajlb5xnngpm.cloudfront.net
+    }
+
+    # Serve CloudFront HTTP requests without redirecting them
+    handle @cloudfront {
+        root * /usr/share/caddy
+
+        @cloudfrontRoot {
+            path /
+        }
+
+        handle @cloudfrontRoot {
+            rewrite * /index.html
+            file_server
+        }
+
+        handle {
+            file_server
+        }
+    }
+
+    # Everything else that isn't localhost gets redirected to HTTPS
     @notLocalhost {
         not header Host localhost*
         not header Host 127.0.0.1*
@@ -104,11 +132,13 @@
 
     redir @notLocalhost https://{host}{uri} permanent
 
+    # Local HTTP traffic
     handle {
         root * /usr/share/caddy
         file_server
     }
 
+    # Custom 404 page while preserving the 404 status
     handle_errors {
         @custom404 expression `{http.error.status_code} == 404`
 

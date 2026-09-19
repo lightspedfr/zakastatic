@@ -11,7 +11,6 @@ http://d1vajlb5xnngpm.cloudfront.net {
 
         reverse_proxy localhost:3000 {
             header_up Host {upstream_host_port}
-
             transport http {
                 read_timeout 0
                 write_timeout 0
@@ -22,7 +21,6 @@ http://d1vajlb5xnngpm.cloudfront.net {
     handle /wisp* {
         reverse_proxy localhost:3000 {
             header_up Host {upstream_host_port}
-
             transport http {
                 read_timeout 0
                 write_timeout 0
@@ -30,21 +28,22 @@ http://d1vajlb5xnngpm.cloudfront.net {
         }
     }
 
-    root * /usr/share/caddy
-
     @root path /
 
     handle @root {
         rewrite * /index.html
+        root * /usr/share/caddy
         file_server
     }
 
     handle {
+        root * /usr/share/caddy
         file_server
     }
 
     handle_errors {
         rewrite * /404.html
+        root * /usr/share/caddy
         file_server
     }
 }
@@ -79,7 +78,6 @@ http://d1vajlb5xnngpm.cloudfront.net {
 
             reverse_proxy localhost:3000 {
                 header_up Host {upstream_host_port}
-
                 transport http {
                     read_timeout 0
                     write_timeout 0
@@ -90,7 +88,6 @@ http://d1vajlb5xnngpm.cloudfront.net {
         handle /wisp* {
             reverse_proxy localhost:3000 {
                 header_up Host {upstream_host_port}
-
                 transport http {
                     read_timeout 0
                     write_timeout 0
@@ -98,21 +95,16 @@ http://d1vajlb5xnngpm.cloudfront.net {
             }
         }
 
-        root * /usr/share/caddy
-
         @cloudfrontRoot path /
 
         handle @cloudfrontRoot {
             rewrite * /index.html
+            root * /usr/share/caddy
             file_server
         }
 
         handle {
-            file_server
-        }
-
-        handle_errors {
-            rewrite * /404.html
+            root * /usr/share/caddy
             file_server
         }
     }
@@ -123,7 +115,6 @@ http://d1vajlb5xnngpm.cloudfront.net {
 
         reverse_proxy localhost:3000 {
             header_up Host {upstream_host_port}
-
             transport http {
                 read_timeout 0
                 write_timeout 0
@@ -134,7 +125,6 @@ http://d1vajlb5xnngpm.cloudfront.net {
     handle /wisp* {
         reverse_proxy localhost:3000 {
             header_up Host {upstream_host_port}
-
             transport http {
                 read_timeout 0
                 write_timeout 0
@@ -153,9 +143,7 @@ http://d1vajlb5xnngpm.cloudfront.net {
         file_server
     }
 
-    @root {
-        path /
-    }
+    @root path /
 
     handle @root {
         rewrite * /index.html
@@ -170,6 +158,7 @@ http://d1vajlb5xnngpm.cloudfront.net {
 
     handle_errors {
         rewrite * /404.html
+        root * /usr/share/caddy
         file_server
     }
 
@@ -208,7 +197,6 @@ http://d1vajlb5xnngpm.cloudfront.net {
 
             reverse_proxy localhost:3000 {
                 header_up Host {upstream_host_port}
-
                 transport http {
                     read_timeout 0
                     write_timeout 0
@@ -219,7 +207,6 @@ http://d1vajlb5xnngpm.cloudfront.net {
         handle /wisp* {
             reverse_proxy localhost:3000 {
                 header_up Host {upstream_host_port}
-
                 transport http {
                     read_timeout 0
                     write_timeout 0
@@ -227,21 +214,16 @@ http://d1vajlb5xnngpm.cloudfront.net {
             }
         }
 
-        root * /usr/share/caddy
+        @cloudfrontRoot path /
 
-        @root path /
-
-        handle @root {
+        handle @cloudfrontRoot {
             rewrite * /index.html
+            root * /usr/share/caddy
             file_server
         }
 
         handle {
-            file_server
-        }
-
-        handle_errors {
-            rewrite * /404.html
+            root * /usr/share/caddy
             file_server
         }
     }

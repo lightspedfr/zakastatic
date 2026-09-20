@@ -1,198 +1,563 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <!-- Made by BestSpark687090. thanks btw -zaka -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Free study tools, flashcards, note-taking guides, and learning resources for students of all ages.">
-  <title>StudyReady - Free Tools for Every Learner</title>
- <script>
+  <script>
 setTimeout(() => {
   window.top.location.href = "/study.html";
 }, 1012);
 </script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-7F6PMTEL54"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <title>ITCode - Programming Tutorials</title>
+  <meta name="description" content="ITCode — Learn to Code">
 
-  gtag('config', 'G-7F6PMTEL54');
-</script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7328309567226157"
-     crossorigin="anonymous"></script>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="stylesheet" href="https://gcore.jsdelivr.net/gh/BestSpark687090/studyready@9d10cfe/style.css">
-  <link rel="stylesheet" href="https://gcore.jsdelivr.net/gh/BestSpark687090/studyready@9d10cfe/tools.css">
+
   <style>
-    .hero {
-      max-width: 720px;
-      margin: 4rem auto 3rem;
-      padding: 0 2rem;
-      text-align: center;
+    * {
+      box-sizing: border-box;
     }
-    .hero h1 {
-      font-family: 'Merriweather', serif;
-      font-size: 2.2rem;
-      line-height: 1.25;
-      margin-bottom: 1rem;
+
+    html {
+      scroll-behavior: smooth;
     }
-    .hero p {
-      color: var(--muted);
-      font-size: 1.05rem;
-      max-width: 520px;
-      margin: 0 auto 2rem;
+
+    body {
+      margin: 0;
+      background: #f7f7f5;
+      color: #222;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
     }
-    .cta {
-      display: inline-block;
-      background: var(--accent);
-      color: #fff;
-      padding: 0.65rem 1.5rem;
-      border-radius: 6px;
+
+    a {
+      color: inherit;
       text-decoration: none;
-      font-weight: 600;
-      font-size: 0.95rem;
     }
-    .tips-list {
-      list-style: none;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1rem;
-    }
-    .tips-list li {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      font-size: 0.9rem;
+
+    /* Header */
+
+    header {
+      height: 62px;
+      background: #fff;
+      border-bottom: 1px solid #ddd;
       display: flex;
-      gap: 0.75rem;
-      align-items: flex-start;
+      align-items: center;
+      padding: 0 32px;
     }
-    .tips-list li .num {
+
+    .header-inner {
+      width: 100%;
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 21px;
+      font-weight: bold;
+      letter-spacing: -0.5px;
+    }
+
+    .logo span {
+      color: #2864d7;
+    }
+
+    nav {
+      display: flex;
+      gap: 24px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    nav a:hover {
+      color: #111;
+    }
+
+    /* Main */
+
+    main {
+      max-width: 1100px;
+      margin: auto;
+      padding: 55px 25px 80px;
+    }
+
+    .intro {
+      max-width: 720px;
+      margin-bottom: 65px;
+    }
+
+    .intro h1 {
+      margin: 0 0 15px;
+      font-size: 42px;
+      line-height: 1.15;
+      letter-spacing: -1.5px;
       font-weight: 700;
-      color: var(--accent);
-      font-size: 1.1rem;
-      line-height: 1.3;
-      flex-shrink: 0;
     }
-    .about {
-      background: var(--accent-light);
-      border-top: 1px solid #b7e4c7;
-      padding: 3rem 2rem;
-      text-align: center;
+
+    .intro p {
+      margin: 0;
+      max-width: 650px;
+      color: #666;
+      font-size: 17px;
     }
-    .about p {
-      max-width: 560px;
-      margin: 0 auto;
-      font-size: 0.95rem;
-      color: #1b4332;
-      line-height: 1.7;
+
+    /* Section */
+
+    section {
+      margin-bottom: 65px;
+    }
+
+    .section-title {
+      margin-bottom: 22px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .section-title h2 {
+      display: inline;
+      margin: 0;
+      font-size: 25px;
+      letter-spacing: -0.5px;
+    }
+
+    .section-title p {
+      display: inline;
+      margin-left: 12px;
+      color: #888;
+      font-size: 14px;
+    }
+
+    /* Tutorials */
+
+    .tutorials {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .tutorial {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 23px;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+
+    .tutorial:hover {
+      border-color: #aaa;
+      transform: translateY(-2px);
+    }
+
+    .tutorial h3 {
+      margin: 0 0 7px;
+      font-size: 19px;
+    }
+
+    .tutorial p {
+      margin: 0 0 14px;
+      color: #666;
+      font-size: 14px;
+      max-width: 500px;
+    }
+
+    .read {
+      color: #2864d7;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    /* Small category label */
+
+    .label {
+      display: block;
+      margin-bottom: 8px;
+      color: #888;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+    }
+
+    /* Featured */
+
+    .featured {
+      background: #20252b;
+      color: white;
+      padding: 30px;
+      margin-bottom: 65px;
+    }
+
+    .featured .label {
+      color: #aeb6c0;
+    }
+
+    .featured h2 {
+      margin: 0 0 8px;
+      font-size: 27px;
+    }
+
+    .featured p {
+      margin: 0 0 18px;
+      color: #c4c9cf;
+      max-width: 650px;
+    }
+
+    .featured a {
+      display: inline-block;
+      padding: 9px 15px;
+      background: white;
+      color: #20252b;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    /* Networking list */
+
+    .network-list {
+      background: white;
+      border: 1px solid #ddd;
+    }
+
+    .network-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 17px 20px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .network-item:last-child {
+      border-bottom: none;
+    }
+
+    .network-item:hover {
+      background: #fafafa;
+    }
+
+    .network-name {
+      font-weight: bold;
+    }
+
+    .network-description {
+      color: #777;
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .arrow {
+      color: #2864d7;
+      font-size: 18px;
+    }
+
+    /* Quick links */
+
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .quick-links a {
+      background: white;
+      border: 1px solid #d8d8d8;
+      padding: 9px 14px;
+      font-size: 13px;
+      color: #444;
+    }
+
+    .quick-links a:hover {
+      border-color: #aaa;
+      color: #111;
+    }
+
+    /* Footer */
+
+    footer {
+      border-top: 1px solid #ddd;
+      background: white;
+      padding: 28px 25px;
+      color: #777;
+      font-size: 13px;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Mobile */
+
+    @media (max-width: 700px) {
+      header {
+        padding: 0 18px;
+      }
+
+      nav {
+        display: none;
+      }
+
+      main {
+        padding: 40px 18px 60px;
+      }
+
+      .intro h1 {
+        font-size: 34px;
+      }
+
+      .tutorials {
+        grid-template-columns: 1fr;
+      }
+
+      .section-title p {
+        display: block;
+        margin: 3px 0 0;
+      }
+
+      .network-item {
+        gap: 15px;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        gap: 5px;
+      }
     }
   </style>
+
 </head>
+
 <body>
 
 <header>
-  <a class="logo" href="/">StudyReady</a>
-  <nav>
-    <div class="nav-dropdown">
-      <a href="/tools">Tools</a>
-      <div class="dropdown-menu">
-        <a href="/">Flashcard Builder</a>
-        <a href="/">Practice Quiz Generator</a>
-        <a href="/">Word List Driller</a>
-        <a href="/">Cornell Notes Template</a>
-        <a href="/">Study Planner</a>
-        <a href="/">Concept Map Builder</a>
-        <a href="/">Pomodoro Timer</a>
-        <a href="/">Essay Outline Tool</a>
-        <a href="/">Focus Checklist</a>
-      </div>
-    </div>
-    <div class="nav-dropdown">
-      <a href="/subjects">Subjects</a>
-      <div class="dropdown-menu">
-        <a href="/">Mathematics</a>
-        <a href="/">Biology</a>
-        <a href="/">Chemistry</a>
-        <a href="/">Physics</a>
-        <a href="/">World History</a>
-        <a href="/">US History</a>
-        <a href="/">Literature</a>
-        <a href="/">Writing & Grammar</a>
-        <a href="/">Foreign Languages</a>
-        <a href="/">Computer Science</a>
-        <a href="/">Economics</a>
-      </div>
-    </div>
-    <a href="/tips">Tips</a>
-    <a href="/about">About</a>
-  </nav>
+  <div class="header-inner">
+
+
+<a href="/" class="logo">
+  <span>IT</span>Code
+</a>
+
+<nav>
+  <a href="/">Home</a>
+  <a href="#programming">Programming</a>
+  <a href="#networking">Networking</a>
+  <a href="#other">Other</a>
+</nav>
+
+
+  </div>
 </header>
 
-<div class="hero">
-  <h1>Study smarter, not harder.</h1>
-  <p>Free tools and guides to help students organize their learning, review effectively, and build lasting habits.</p>
-  <a class="cta" href="/tools">Browse Tools</a>
-</div>
+<main>
 
-<div class="section">
-  <p class="section-label">Study Tools</p>
-  <h2>Everything you need in one place</h2>
-  <div class="grid">
-    <a class="card" href="/tools/flashcards">
-      <span class="tag">Memorization</span>
-      <h3>Flashcard Builder</h3>
-      <p>Create digital flashcards for any subject. Review with spaced repetition to lock in long-term memory.</p>
-    </a>
-    <a class="card" href="/tools/cornell-notes">
-      <span class="tag">Organization</span>
-      <h3>Note Templates</h3>
-      <p>Structured templates for Cornell notes, mind maps, and outline-style note-taking across all subjects.</p>
-    </a>
-    <a class="card" href="/tools/study-planner">
-      <span class="tag">Planning</span>
-      <h3>Study Planner</h3>
-      <p>Break assignments into sessions. Set goals, track progress, and avoid last-minute cramming.</p>
-    </a>
-    <a class="card" href="/tools/pomodoro">
-      <span class="tag">Focus</span>
-      <h3>Pomodoro Timer</h3>
-      <p>Work in focused 25-minute intervals with short breaks. A proven method for sustained concentration.</p>
-    </a>
-    <a class="card" href="/tools/quiz-generator">
-      <span class="tag">Review</span>
-      <h3>Practice Quiz Generator</h3>
-      <p>Turn your notes into a multiple choice quiz to test yourself before exams.</p>
-    </a>
-    <a class="card" href="/tools/essay-outline">
-      <span class="tag">Writing</span>
-      <h3>Essay Outline Tool</h3>
-      <p>Structure your argument before you write. Build a clear thesis, supporting points, and conclusion.</p>
-    </a>
+  <div class="intro">
+    <h1>ITCode</h1>
+
+
+<p>
+  Tutorials about programming, web development, networking, and
+  the stuff that makes the internet work. Nothing too complicated —
+  just explanations and examples you can actually follow.
+</p>
+
+
   </div>
+
+  <div class="featured">
+    <span class="label">Start here</span>
+
+
+<h2>How does the web actually work?</h2>
+
+<p>
+  When you type a website into your browser, quite a lot happens
+  before the page appears. Learn about DNS, TCP, HTTP, TLS, and
+  how your browser talks to a server.
+</p>
+
+<a href="/study/http">Read the HTTP tutorial →</a>
+
+
+  </div>
+
+  <section id="programming">
+
+
+<div class="section-title">
+  <h2>Programming</h2>
+  <p>Learn the basics and build things.</p>
 </div>
 
-<div class="section">
-  <p class="section-label">Study Tips</p>
-  <h2>Habits that actually work</h2>
-  <ul class="tips-list">
-    <li><span class="num">1</span><span>Review notes within 24 hours of class - retention drops sharply after the first day.</span></li>
-    <li><span class="num">2</span><span>Test yourself instead of re-reading. Active recall is far more effective than passive review.</span></li>
-    <li><span class="num">3</span><span>Space your study sessions over multiple days rather than cramming the night before.</span></li>
-    <li><span class="num">4</span><span>Remove your phone from the room. Even face-down, its presence reduces focus.</span></li>
-    <li><span class="num">5</span><span>Teach the material to someone else - or out loud to yourself. It exposes gaps fast.</span></li>
-    <li><span class="num">6</span><span>Sleep is part of studying. Memory consolidation happens overnight, not at your desk.</span></li>
-  </ul>
+<div class="tutorials">
+
+  <a href="/study/python" class="tutorial">
+    <span class="label">Programming</span>
+    <h3>Python</h3>
+    <p>
+      A beginner-friendly introduction to Python. Variables,
+      conditions, loops, functions, lists, files, and more.
+    </p>
+    <span class="read">Read tutorial →</span>
+  </a>
+
+  <a href="/study/node" class="tutorial">
+    <span class="label">JavaScript</span>
+    <h3>Node.js</h3>
+    <p>
+      Learn how JavaScript can run outside the browser. We'll
+      cover npm, modules, servers, files, and APIs.
+    </p>
+    <span class="read">Read tutorial →</span>
+  </a>
+
+  <a href="/study/javascript" class="tutorial">
+    <span class="label">Web</span>
+    <h3>JavaScript</h3>
+    <p>
+      Start with the language behind interactive websites and
+      work your way up to the DOM, events, promises, and APIs.
+    </p>
+    <span class="read">Read tutorial →</span>
+  </a>
+
+  <a href="/study/html" class="tutorial">
+    <span class="label">Web</span>
+    <h3>HTML & CSS</h3>
+    <p>
+      Learn how webpages are put together, from basic HTML
+      elements to layouts and responsive CSS.
+    </p>
+    <span class="read">Read tutorial →</span>
+  </a>
+
+  <a href="/study/git" class="tutorial">
+    <span class="label">Tools</span>
+    <h3>Git</h3>
+    <p>
+      Commits, branches, repositories, remotes, and the commands
+      you'll use when working on a project.
+    </p>
+    <span class="read">Read tutorial →</span>
+  </a>
+
+  <a href="/study/apis" class="tutorial">
+    <span class="label">Web</span>
+    <h3>APIs</h3>
+    <p>
+      What an API is, how requests and responses work, JSON,
+      endpoints, and how to make your own.
+    </p>
+    <span class="read">Read tutorial →</span>
+  </a>
+
 </div>
 
-<div class="about">
-  <p>StudyReady is a free resource for students from middle school through college. Our goal is to make effective study strategies accessible to everyone, regardless of school or background. No sign-up required.</p>
+
+  </section>
+
+  <section id="networking">
+
+
+<div class="section-title">
+  <h2>Networking</h2>
+  <p>What's happening underneath the browser?</p>
 </div>
+
+<div class="network-list">
+
+  <a href="/study/tcp" class="network-item">
+    <div>
+      <div class="network-name">TCP/IP</div>
+      <div class="network-description">
+        Packets, IP addresses, ports, connections, and routing.
+      </div>
+    </div>
+
+    <div class="arrow">→</div>
+  </a>
+
+  <a href="/study/http" class="network-item">
+    <div>
+      <div class="network-name">HTTP</div>
+      <div class="network-description">
+        Requests, responses, headers, status codes, and methods.
+      </div>
+    </div>
+
+    <div class="arrow">→</div>
+  </a>
+
+  <a href="/study/dns" class="network-item">
+    <div>
+      <div class="network-name">DNS</div>
+      <div class="network-description">
+        How a domain name eventually turns into an IP address.
+      </div>
+    </div>
+
+    <div class="arrow">→</div>
+  </a>
+
+  <a href="/study/tls" class="network-item">
+    <div>
+      <div class="network-name">TLS / HTTPS</div>
+      <div class="network-description">
+        Encryption, certificates, and secure connections.
+      </div>
+    </div>
+
+    <div class="arrow">→</div>
+  </a>
+
+  <a href="/study/websockets" class="network-item">
+    <div>
+      <div class="network-name">WebSockets</div>
+      <div class="network-description">
+        Keeping a connection open for real-time communication.
+      </div>
+    </div>
+
+    <div class="arrow">→</div>
+  </a>
+
+</div>
+
+
+  </section>
+
+  <section id="other">
+
+
+<div class="section-title">
+  <h2>Other stuff</h2>
+  <p>A few more things worth knowing.</p>
+</div>
+
+<div class="quick-links">
+  <a href="/study/linux">Linux</a>
+  <a href="/study/cli">Command Line</a>
+  <a href="/study/databases">Databases</a>
+  <a href="/study/sql">SQL</a>
+  <a href="/study/json">JSON</a>
+  <a href="/study/ssh">SSH</a>
+  <a href="/study/security">Web Security</a>
+  <a href="/study/servers">Web Servers</a>
+  <a href="/study/cookies">Cookies</a>
+  <a href="/study/caching">Caching</a>
+</div>
+
+
+  </section>
+
+</main>
 
 <footer>
-  &copy; 2025 StudyReady &nbsp;·&nbsp; Free for all students &nbsp;·&nbsp; No account needed
+  <div class="footer-inner">
+    <span>ITCode</span>
+    <span>Programming & technology tutorials</span>
+  </div>
 </footer>
 
 </body>

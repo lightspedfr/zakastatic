@@ -1,57 +1,54 @@
 # =========================
-# Build Node application
+# Node application
 # =========================
-FROM node:20-alpine AS node-builder
+FROM node:20-bookworm-slim AS node-builder
 
 WORKDIR /app
 
 COPY node/package*.json ./
 
-RUN npm install --omit=dev
+RUN npm install --omit=dev --include=optional
 
 COPY node/index.js ./
 
 
 # =========================
-# Final image
+# Caddy + Node
 # =========================
-FROM caddy:2.11-alpine
+FROM caddy:2.11
 
 # Install Node.js
-RUN apk add --no-cache nodejs npm
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends nodejs npm \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy Node application
 COPY --from=node-builder /app /app
 
-# Copy Caddy configuration
 COPY Caddyfile /etc/caddy/Caddyfile
 
-# Copy website files
 COPY . /usr/share/caddy/
 
-# Remove files that shouldn't be served
 RUN rm -rf \
     /usr/share/caddy/node \
     /usr/share/caddy/Caddyfile \
     /usr/share/caddy/Dockerfile
 
-# Startup script
+
+# =========================
+# Startup
+# =========================
 RUN printf '%s\n' \
     '#!/bin/sh' \
     'set -e' \
-    '' \
     'echo "Starting Node application..."' \
     'node /app/index.js &' \
     'NODE_PID=$!' \
-    '' \
     'echo "Starting Caddy..."' \
     'caddy run --config /etc/caddy/Caddyfile --adapter caddyfile &' \
     'CADDY_PID=$!' \
-    '' \
     'trap "kill $NODE_PID $CADDY_PID 2>/dev/null || true" INT TERM EXIT' \
-    '' \
     'wait -n $NODE_PID $CADDY_PID' \
     'exit $?' \
     > /start.sh

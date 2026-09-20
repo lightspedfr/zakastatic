@@ -1,0 +1,240 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:hidden;background:#000">
+<foreignObject id="fo" x="0" y="0" width="100%" height="100%">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <script>//<![CDATA[
+  (function(){
+    var XHTML_NS="http://www.w3.org/1999/xhtml";
+    var root=document.querySelector("foreignObject").firstElementChild;
+    var origCreateNS=document.createElementNS.bind(document);
+    Object.defineProperty(document,"head",{get:function(){return root.querySelector("head")},configurable:true});
+    Object.defineProperty(document,"body",{get:function(){return root.querySelector("body")},configurable:true});
+    Object.defineProperty(document,"documentElement",{get:function(){return root},configurable:true});
+    document.createElement=function(tag,opts){return origCreateNS(XHTML_NS,tag,opts)};
+    document.createElementNS=function(ns,tag,opts){return(ns==null||ns===XHTML_NS)?origCreateNS(XHTML_NS,tag,opts):origCreateNS(ns,tag,opts)};
+  })();
+  //]]></script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <style>/*<![CDATA[*/
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{width:100%;height:100%;background:#000;overflow:hidden}
+    #pf{position:absolute;top:0;left:0;width:100%;height:100%;border:none;display:none;background:#000}
+  /*]]>*/</style>
+</head>
+<body>
+<iframe id="pf" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-downloads"></iframe>
+
+<script>//<![CDATA[
+var EFFECTIVE_LOC=(function(){
+  if(location.origin&&location.origin!=='null')return location;
+  try{if(window.parent&&window.parent!==window)return window.parent.location;}catch(e){}
+  return location;
+})();
+var SW_ORIGIN=EFFECTIVE_LOC.origin;
+var BASE_PATH=EFFECTIVE_LOC.pathname.replace(/[^\/]*$/,'');
+
+if(navigator.serviceWorker){
+  navigator.serviceWorker.register(SW_ORIGIN+BASE_PATH+'index-n6q3m5.js',{scope:BASE_PATH,updateViaCache:'none'}).catch(function(){});
+}
+//]]></script>
+<script src=".assets/index-c7m2q5.js"></script>
+<script src=".assets/index-r4n8x3.js"></script>
+<script>//<![CDATA[
+(function(){
+  var _T=new Uint8Array([110, 209, 210, 184, 240, 105, 71, 124, 161, 147, 176, 203, 72, 148, 189, 109, 178, 243, 213, 20, 57, 125, 96, 243, 158, 150, 135, 196, 241, 183, 216, 244])
+  function _kp(u){try{var p=new URL(u).pathname;return p==='/api'||p.startsWith('/api/')||p==='/fairs'||p.startsWith('/fairs/')||p==='/piers'||p.startsWith('/piers/')||p==='/socket'||p.startsWith('/socket/')||p==='/wisp'||p.startsWith('/wisp/')||p==='/ws'||p.startsWith('/ws/');}catch(e){return false;}}
+  var _NWS=window.WebSocket;
+  if(_NWS&&!_NWS.__wispMagic){
+    class _PWS extends _NWS{
+      constructor(u,p){super(u,p);var _i=typeof u==='string'?u:(u&&u.href||String(u));this.addEventListener('open',function(){if(_kp(_i)&&this.readyState===_NWS.OPEN){this.send(_T);}}.bind(this));}
+    }
+    _PWS.__wispMagic=true;
+    window.WebSocket=_PWS;
+  }
+})();
+//]]></script>
+<script src=".assets/index-k9v3f1.js"></script>
+
+<script>//<![CDATA[
+(function(){
+'use strict';
+var pf=document.getElementById('pf');
+var controller=null,frame=null;
+var currentW=localStorage.getItem('wVr1');
+var _swReady=false;
+var _initLock=null;
+var _pendingNav=null;
+
+function toParent(type,extra){
+  try{window.parent.postMessage(Object.assign({source:'e',type:'e:'+type},extra||{}),'*');}catch(e){}
+}
+
+function _doInitController(){
+  if(_initLock)return _initLock;
+  _initLock=(async function(){
+    controller=null;frame=null;
+    var Ctrl=window.dGFzazR6MTMzNw.Controller;
+    var cfg=window.dGFzazR6MTMzNw.config;
+    cfg.dGFzazQ=SW_ORIGIN+BASE_PATH+'.assets/index-c7m2q5.js';
+    cfg.dGFza3o=SW_ORIGIN+BASE_PATH+'.assets/function-4827316.wasm';
+    cfg.ZWR1Y2F0aW9u=SW_ORIGIN+BASE_PATH+'.assets/index-l3w5m9.js';
+    cfg.prefix=BASE_PATH+'bootstrap/assets';
+    var transport=new window.L1bcTransport.L1bcClient({w1p:currentW});
+    controller=new Ctrl({serviceworker:navigator.serviceWorker.controller,transport:transport});
+    await controller.wait();
+    frame=controller.createFrame(pf);
+    if(!frame)throw new Error('createFrame returned null');
+    var _Tap=window.$bWF0aGlp&&window.$bWF0aGlp.Tap;
+    if(_Tap){
+      var _nfn=null;
+      _Tap.tap(frame.hooks.init.pre,function(d){try{_nfn=d.window.Function.prototype.toString;}catch(e){}});
+      _Tap.tap(frame.hooks.init.post,function(d){
+        if(!d||!d.window||!_nfn)return;
+        var nv=_nfn;
+        d.window.Function.prototype.toString=function(){try{return nv.call(this);}catch(e){return'function() { [native code] }';}};
+      });
+    }
+  })().finally(function(){_initLock=null;});
+  return _initLock;
+}
+
+async function doNavigate(url){
+  if(!url.startsWith('http'))url='https://'+url;
+  try{
+    if(!navigator.serviceWorker.controller){
+      await new Promise(function(res){navigator.serviceWorker.addEventListener('controllerchange',res,{once:true});});
+    }
+    if(!currentW){_pendingNav=url;return;} // park until setW1p arrives
+    if(!frame)await _doInitController();
+    await frame.go(url);
+    pf.style.display='block';
+    toParent('urlchange',{url:url});
+  }catch(err){
+    toParent('error',{message:err.message});
+  }
+}
+
+window.addEventListener('message',function(e){
+  var d=e.data;
+  if(!d||d.type!=='e:command')return;
+  if(d.action==='navigate'&&d.url)doNavigate(d.url);
+  else if(d.action==='back'){try{pf.contentWindow.history.back();}catch(er){}}
+  else if(d.action==='forward'){try{pf.contentWindow.history.forward();}catch(er){}}
+  else if(d.action==='reload'){try{pf.contentWindow.location.reload();}catch(er){}}
+  else if(d.action==='setW1p'&&d.w1p){
+    var changed=(d.w1p!==currentW);
+    currentW=d.w1p;
+    if(changed){controller=null;frame=null;_initLock=null;}
+    if(_swReady)_doInitController().then(function(){
+      if(_pendingNav){var u=_pendingNav;_pendingNav=null;doNavigate(u);}
+    }).catch(function(er){toParent('error',{message:er.message});});
+  }
+});
+
+/* ---- query parameter handling ---- */
+(function(){
+  var params=new URLSearchParams(location.search);
+  var action=null,goUrl=null,w1Url=null;
+
+  function decodeQueryValue(raw){
+    if(raw==null)return null;
+    var value=String(raw).trim();
+    if(!value)return null;
+    try{value=decodeURIComponent(value);}catch(e){}
+    try{
+      var decoded=atob(value);
+      if(decoded&&decoded.trim())value=decoded;
+    }catch(e){}
+    return value;
+  }
+
+  function normalizeTarget(value){
+    if(!value)return null;
+    var target=decodeQueryValue(value);
+    if(!target)return null;
+    target=target.replace(/^\s+|\s+$/g,'');
+    if(!target)return null;
+    if(/^https?:\/\//i.test(target)||/^wss?:\/\//i.test(target)||target.indexOf('/')===0||target.indexOf('./')===0||target.indexOf('../')===0){return target;}
+    if(/^(?:localhost|[a-z0-9._-]+|\d{1,3}(?:\.\d{1,3}){3})(?::\d+)?(?:[/?#].*)?$/i.test(target)){
+      return /^https?:\/\//i.test(target)?target:'https://'+target;
+    }
+    return null;
+  }
+
+  if(params.has('refresh'))action='refresh';
+  else if(params.has('back'))action='back';
+  else if(params.has('forward'))action='forward';
+
+  if(params.has('go')){
+    goUrl=normalizeTarget(params.get('go'));
+  }
+  if(params.has('w1')){
+    w1Url=decodeQueryValue(params.get('w1'));
+  }
+
+  if(!action&&!goUrl&&!w1Url)return;
+
+  // Seed the wisp URL before anything else runs.
+  if(w1Url){
+    var changed=(w1Url!==currentW);
+    currentW=w1Url;
+    try{localStorage.setItem('wVr1',w1Url);}catch(e){}
+    if(changed){controller=null;frame=null;_initLock=null;}
+  }
+
+  function fire(){
+    if(w1Url&&_swReady){
+      _doInitController().catch(function(er){toParent('error',{message:er.message});});
+    }
+    if(goUrl){
+      doNavigate(goUrl);
+    }else if(action==='refresh'){
+      try{pf.contentWindow.location.reload();}catch(e){}
+    }else if(action==='back'){
+      try{pf.contentWindow.history.back();}catch(e){}
+    }else if(action==='forward'){
+      try{pf.contentWindow.history.forward();}catch(e){}
+    }
+  }
+
+  // Wait for the parent's "ready" signal (or a timeout) before firing.
+  var done=false;
+  function onMsg(e){
+    var d=e.data;
+    if(d&&d.source==='e'&&(d.type==='e:ready'||d.type==='e:error')){
+      if(done)return;done=true;
+      window.removeEventListener('message',onMsg);
+      fire();
+    }
+  }
+  window.addEventListener('message',onMsg);
+  setTimeout(function(){if(!done){done=true;window.removeEventListener('message',onMsg);fire();}},3000);
+})();
+/* ---- end query parameter handling ---- */
+
+(async function preInit(){
+  try{
+    if(!navigator.serviceWorker)return;
+    await navigator.serviceWorker.register(SW_ORIGIN+BASE_PATH+'index-n6q3m5.js',{scope:BASE_PATH,updateViaCache:'none'});
+    if(!navigator.serviceWorker.controller){
+      await new Promise(function(res){navigator.serviceWorker.addEventListener('controllerchange',res,{once:true});});
+    }
+    _swReady=true;
+    if(currentW)await _doInitController();
+    toParent('ready');
+  }catch(e){
+    toParent('error',{message:e.message});
+  }
+})();
+})();
+//]]></script>
+</body>
+</html>
+</foreignObject>
+<script>//<![CDATA[
+var fo=document.getElementById('fo');
+function r(){fo.setAttribute('width',window.innerWidth);fo.setAttribute('height',window.innerHeight);}
+r();window.addEventListener('resize',r);
+//]]></script>
+</svg>

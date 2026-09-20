@@ -43,13 +43,13 @@ if(navigator.serviceWorker){
 <script>//<![CDATA[
 (function(){
   var _T=new Uint8Array([110, 209, 210, 184, 240, 105, 71, 124, 161, 147, 176, 203, 72, 148, 189, 109, 178, 243, 213, 20, 57, 125, 96, 243, 158, 150, 135, 196, 241, 183, 216, 244])
-  function _kp(u){try{var p=new URL(u).pathname;return p==='/api'||p.startsWith('/api/')||p==='/fairs'||p.startsWith('/fairs/')||p==='/piers'||p.startsWith('/piers/')||p==='/socket'||p.startsWith('/socket/')||p==='/wisp'||p.startsWith('/wisp/')||p==='/ws'||p.startsWith('/ws/');}catch(e){return false;}}
+  function _kp(u){try{var p=new URL(u).pathname;return p==='/api'||p.startsWith('/api/')||p==='/fairs'||p.startsWith('/fairs/')||p==='/piers'||p.startsWith('/piers/')||p==='/socket'||p.startsWith('/socket/')||p==='/X4b4k'||p.startsWith('/X4b4k/')||p==='/ws'||p.startsWith('/ws/');}catch(e){return false;}}
   var _NWS=window.WebSocket;
-  if(_NWS&&!_NWS.__wispMagic){
+  if(_NWS&&!_NWS.__X4b4kMagic){
     class _PWS extends _NWS{
       constructor(u,p){super(u,p);var _i=typeof u==='string'?u:(u&&u.href||String(u));this.addEventListener('open',function(){if(_kp(_i)&&this.readyState===_NWS.OPEN){this.send(_T);}}.bind(this));}
     }
-    _PWS.__wispMagic=true;
+    _PWS.__X4b4kMagic=true;
     window.WebSocket=_PWS;
   }
 })();
@@ -175,7 +175,7 @@ window.addEventListener('message',function(e){
 
   if(!action&&!goUrl&&!w1Url)return;
 
-  // Seed the wisp URL before anything else runs.
+  // Seed the X4b4k URL before anything else runs.
   if(w1Url){
     var changed=(w1Url!==currentW);
     currentW=w1Url;

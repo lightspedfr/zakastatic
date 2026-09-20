@@ -1,0 +1,11 @@
+{
+  "name": "GT61XC76",
+  "ws": [
+    "wss://account.zaka.qzz.io/api/",
+    "wss://api.zaka13.com/api/",
+    "wss://zaka13fr.b-cdn.net/api/",
+    "wss://zaka4141.b-cdn.net/api/",
+    "wss://educationalstudies.zaka.qzz.io/api/",
+    "wss://d1vajlb5xnngpm.cloudfront.net/api/"
+  ]
+}

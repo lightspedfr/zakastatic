@@ -1,5 +1,5 @@
 # =========================
-# Build Node application
+# Node dependency builder
 # =========================
 FROM node:20-bookworm-slim AS node-builder
 
@@ -13,19 +13,13 @@ COPY node/index.js ./
 
 
 # =========================
-# Caddy + Node
+# Final image
 # =========================
-FROM caddy:2.11-builder AS caddy-builder
-
-# Nothing needed here; this stage just gives us
-# the Caddy binary from the official image.
-
-
 FROM debian:bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install Caddy dependencies + Node.js
+# Install Node.js, npm and required tools
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
@@ -34,21 +28,45 @@ RUN apt-get update \
         npm \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy Caddy from official Caddy image
-COPY --from=caddy-builder /usr/bin/caddy /usr/bin/caddy
+
+# =========================
+# Install Caddy
+# =========================
+
+RUN curl -1sLf \
+    'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' \
+    | gpg --dearmor \
+    -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg \
+    && curl -1sLf \
+    'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' \
+    > /etc/apt/sources.list.d/caddy-stable.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends caddy \
+    && rm -rf /var/lib/apt/lists/*
+
+
+# =========================
+# Node application
+# =========================
 
 WORKDIR /app
 
-# Copy Node application and its dependencies
 COPY --from=node-builder /app /app
 
+
+# =========================
 # Caddy configuration
+# =========================
+
 COPY Caddyfile /etc/caddy/Caddyfile
 
-# Website files
+
+# =========================
+# Website
+# =========================
+
 COPY . /usr/share/caddy/
 
-# Don't expose these files publicly
 RUN rm -rf \
     /usr/share/caddy/node \
     /usr/share/caddy/Caddyfile \
@@ -63,24 +81,23 @@ RUN printf '%s\n' \
     '#!/bin/sh' \
     'set -e' \
     '' \
-    'echo "================================="' \
     'echo "Starting Node application..."' \
-    'echo "================================="' \
     'node /app/index.js &' \
     'NODE_PID=$!' \
     '' \
     'sleep 1' \
     '' \
-    'echo "================================="' \
     'echo "Starting Caddy..."' \
-    'echo "================================="' \
     'caddy run --config /etc/caddy/Caddyfile --adapter caddyfile &' \
     'CADDY_PID=$!' \
     '' \
-    'trap "kill $NODE_PID $CADDY_PID 2>/dev/null || true" INT TERM EXIT' \
+    'cleanup() {' \
+    '    kill "$NODE_PID" "$CADDY_PID" 2>/dev/null || true' \
+    '}' \
     '' \
-    'wait -n $NODE_PID $CADDY_PID' \
-    'exit $?' \
+    'trap cleanup INT TERM EXIT' \
+    '' \
+    'wait -n "$NODE_PID" "$CADDY_PID"' \
     > /start.sh
 
 RUN chmod +x /start.sh

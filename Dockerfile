@@ -17,15 +17,15 @@ COPY node/index.js ./
 # =========================
 FROM debian:bookworm-slim
 
-ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /app
 
-# Install Node.js, npm and required tools
+# Install Node.js, npm, curl, and certificates
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        ca-certificates \
-        curl \
         nodejs \
         npm \
+        curl \
+        ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -33,23 +33,16 @@ RUN apt-get update \
 # Install Caddy
 # =========================
 
-RUN curl -1sLf \
-    'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' \
-    | gpg --dearmor \
-    -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg \
-    && curl -1sLf \
-    'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' \
-    > /etc/apt/sources.list.d/caddy-stable.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends caddy \
-    && rm -rf /var/lib/apt/lists/*
+RUN curl -L \
+    https://caddyserver.com/api/download?os=linux\&arch=amd64 \
+    -o /usr/bin/caddy \
+    && chmod +x /usr/bin/caddy \
+    && /usr/bin/caddy version
 
 
 # =========================
-# Node application
+# Copy Node application
 # =========================
-
-WORKDIR /app
 
 COPY --from=node-builder /app /app
 
@@ -62,7 +55,7 @@ COPY Caddyfile /etc/caddy/Caddyfile
 
 
 # =========================
-# Website
+# Website files
 # =========================
 
 COPY . /usr/share/caddy/
@@ -81,13 +74,17 @@ RUN printf '%s\n' \
     '#!/bin/sh' \
     'set -e' \
     '' \
+    'echo "================================="' \
     'echo "Starting Node application..."' \
+    'echo "================================="' \
     'node /app/index.js &' \
     'NODE_PID=$!' \
     '' \
     'sleep 1' \
     '' \
+    'echo "================================="' \
     'echo "Starting Caddy..."' \
+    'echo "================================="' \
     'caddy run --config /etc/caddy/Caddyfile --adapter caddyfile &' \
     'CADDY_PID=$!' \
     '' \

@@ -29,6 +29,7 @@ http://d1vajlb5xnngpm.cloudfront.net {
 
     handle / {
         rewrite * /index.html
+        root * /usr/share/caddy
         file_server
     }
 
@@ -47,10 +48,15 @@ http://d1vajlb5xnngpm.cloudfront.net {
 
 :443 {
     @tooLong header_regexp Host ^.{61,}$
-    @hasSus header Host *whm* *cpanel* *login*
+
+    @whm header Host *whm*
+    @cpanel header Host *cpanel*
+    @login header Host *login*
 
     respond @tooLong "Request denied" 493
-    respond @hasSus "Request denied" 493
+    respond @whm "Request denied" 493
+    respond @cpanel "Request denied" 493
+    respond @login "Request denied" 493
 
     handle /api* {
         uri strip_prefix /api
@@ -150,6 +156,7 @@ http://d1vajlb5xnngpm.cloudfront.net:80 {
 
 :80 {
     @cloudfront header Host d1vajlb5xnngpm.cloudfront.net
+
     handle @cloudfront {
         handle /api* {
             uri strip_prefix /api
@@ -215,10 +222,15 @@ http://d1vajlb5xnngpm.cloudfront.net:80 {
 
 http://:4000 {
     @tooLong header_regexp Host ^.{61,}$
-    @hasSus header Host *whm* *cpanel* *login*
+
+    @whm header Host *whm*
+    @cpanel header Host *cpanel*
+    @login header Host *login*
 
     respond @tooLong "Request denied" 493
-    respond @hasSus "Request denied" 493
+    respond @whm "Request denied" 493
+    respond @cpanel "Request denied" 493
+    respond @login "Request denied" 493
 
     handle /api* {
         uri strip_prefix /api

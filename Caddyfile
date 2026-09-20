@@ -64,7 +64,7 @@ http://d1vajlb5xnngpm.cloudfront.net {
 
     handle @hasSus {
         header Content-Type "text/plain"
-        respond "this link was disabled bc you generated a malware, sus, or just down right bad subdomain, stop abusing my BYOD system, this is to generate good links, NOT WHM EXPLOITS" 493
+        respond "this link was disabled bc you generated a malware, sus, or just down right bad subdomain, this is to generate good links, NOT WHM EXPLOITS" 493
     }
 
     @cloudfront {
@@ -256,6 +256,63 @@ http://d1vajlb5xnngpm.cloudfront.net {
     }
 
     redir https://{host}{uri} permanent
+}
+
+:4000 {
+    handle /api* {
+        uri strip_prefix /api
+        rewrite * /wisp{uri}
+
+        reverse_proxy localhost:3000 {
+            header_up Host {upstream_host_port}
+            transport http {
+                read_timeout 0
+                write_timeout 0
+            }
+        }
+    }
+
+    handle /wisp* {
+        reverse_proxy localhost:3000 {
+            header_up Host {upstream_host_port}
+            transport http {
+                read_timeout 0
+                write_timeout 0
+            }
+        }
+    }
+
+    @botRoot {
+        host zaka.is-a.bot
+        path /
+    }
+
+    handle @botRoot {
+        rewrite * /bot.html
+        root * /usr/share/caddy
+        file_server
+    }
+
+    @root {
+        path /
+    }
+
+    handle @root {
+        rewrite * /index.html
+        root * /usr/share/caddy
+        file_server
+    }
+
+    handle {
+        root * /usr/share/caddy
+        file_server
+    }
+
+    handle_errors {
+        rewrite * /404.html
+        root * /usr/share/caddy
+        file_server
+    }
 }
 
 http://localhost {

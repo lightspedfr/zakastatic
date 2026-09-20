@@ -8,9 +8,8 @@ http://d1vajlb5xnngpm.cloudfront.net {
     handle /api* {
         uri strip_prefix /api
         rewrite * /wisp{uri}
-
         reverse_proxy localhost:3000 {
-            header_up Host {upstream_host_port}
+            header_up Host {upstream_hostport}
             transport http {
                 read_timeout 0
                 write_timeout 0
@@ -20,7 +19,7 @@ http://d1vajlb5xnngpm.cloudfront.net {
 
     handle /wisp* {
         reverse_proxy localhost:3000 {
-            header_up Host {upstream_host_port}
+            header_up Host {upstream_hostport}
             transport http {
                 read_timeout 0
                 write_timeout 0
@@ -28,11 +27,8 @@ http://d1vajlb5xnngpm.cloudfront.net {
         }
     }
 
-    @root path /
-
-    handle @root {
+    handle / {
         rewrite * /index.html
-        root * /usr/share/caddy
         file_server
     }
 
@@ -42,7 +38,8 @@ http://d1vajlb5xnngpm.cloudfront.net {
     }
 
     handle_errors {
-        rewrite * /404.html
+        @404 expression `{http.error.status_code} == 404`
+        rewrite @404 /404.html
         root * /usr/share/caddy
         file_server
     }
@@ -50,71 +47,16 @@ http://d1vajlb5xnngpm.cloudfront.net {
 
 :443 {
     @tooLong header_regexp Host ^.{61,}$
+    @hasSus header Host *whm* *cpanel* *login*
 
-    @hasSus {
-        header Host *whm*
-        header Host *cpanel*
-        header Host *login*
-    }
-
-    handle @tooLong {
-        header Content-Type "text/plain"
-        respond "this link was disabled bc you generated a malware, sus, or just down right bad subdomain, stop abusing my BYOD system, this is to generate good links, NOT WHM EXPLOITS" 493
-    }
-
-    handle @hasSus {
-        header Content-Type "text/plain"
-        respond "this link was disabled bc you generated a malware, sus, or just down right bad subdomain, this is to generate good links, NOT WHM EXPLOITS" 493
-    }
-
-    @cloudfront {
-        host d1vajlb5xnngpm.cloudfront.net
-    }
-
-    handle @cloudfront {
-        handle /api* {
-            uri strip_prefix /api
-            rewrite * /wisp{uri}
-
-            reverse_proxy localhost:3000 {
-                header_up Host {upstream_host_port}
-                transport http {
-                    read_timeout 0
-                    write_timeout 0
-                }
-            }
-        }
-
-        handle /wisp* {
-            reverse_proxy localhost:3000 {
-                header_up Host {upstream_host_port}
-                transport http {
-                    read_timeout 0
-                    write_timeout 0
-                }
-            }
-        }
-
-        @cloudfrontRoot path /
-
-        handle @cloudfrontRoot {
-            rewrite * /index.html
-            root * /usr/share/caddy
-            file_server
-        }
-
-        handle {
-            root * /usr/share/caddy
-            file_server
-        }
-    }
+    respond @tooLong "Request denied" 493
+    respond @hasSus "Request denied" 493
 
     handle /api* {
         uri strip_prefix /api
         rewrite * /wisp{uri}
-
         reverse_proxy localhost:3000 {
-            header_up Host {upstream_host_port}
+            header_up Host {upstream_hostport}
             transport http {
                 read_timeout 0
                 write_timeout 0
@@ -124,7 +66,7 @@ http://d1vajlb5xnngpm.cloudfront.net {
 
     handle /wisp* {
         reverse_proxy localhost:3000 {
-            header_up Host {upstream_host_port}
+            header_up Host {upstream_hostport}
             transport http {
                 read_timeout 0
                 write_timeout 0
@@ -132,20 +74,16 @@ http://d1vajlb5xnngpm.cloudfront.net {
         }
     }
 
-    @botRoot {
-        host zaka.is-a.bot
-        path /
-    }
-
-    handle @botRoot {
-        rewrite * /bot.html
+    @botHost host zaka.is-a.bot
+    handle @botHost {
+        @root path /
+        rewrite @root /bot.html
         root * /usr/share/caddy
         file_server
     }
 
-    @root path /
-
-    handle @root {
+    @normalRoot path /
+    handle @normalRoot {
         rewrite * /index.html
         root * /usr/share/caddy
         file_server
@@ -157,7 +95,8 @@ http://d1vajlb5xnngpm.cloudfront.net {
     }
 
     handle_errors {
-        rewrite * /404.html
+        @404 expression `{http.error.status_code} == 404`
+        rewrite @404 /404.html
         root * /usr/share/caddy
         file_server
     }
@@ -167,18 +106,56 @@ http://d1vajlb5xnngpm.cloudfront.net {
     }
 }
 
-:80 {
-    @cloudfront {
-        host d1vajlb5xnngpm.cloudfront.net
+http://d1vajlb5xnngpm.cloudfront.net:80 {
+    handle /api* {
+        uri strip_prefix /api
+        rewrite * /wisp{uri}
+        reverse_proxy localhost:3000 {
+            header_up Host {upstream_hostport}
+            transport http {
+                read_timeout 0
+                write_timeout 0
+            }
+        }
     }
 
+    handle /wisp* {
+        reverse_proxy localhost:3000 {
+            header_up Host {upstream_hostport}
+            transport http {
+                read_timeout 0
+                write_timeout 0
+            }
+        }
+    }
+
+    handle / {
+        rewrite * /index.html
+        root * /usr/share/caddy
+        file_server
+    }
+
+    handle {
+        root * /usr/share/caddy
+        file_server
+    }
+
+    handle_errors {
+        @404 expression `{http.error.status_code} == 404`
+        rewrite @404 /404.html
+        root * /usr/share/caddy
+        file_server
+    }
+}
+
+:80 {
+    @cloudfront header Host d1vajlb5xnngpm.cloudfront.net
     handle @cloudfront {
         handle /api* {
             uri strip_prefix /api
             rewrite * /wisp{uri}
-
             reverse_proxy localhost:3000 {
-                header_up Host {upstream_host_port}
+                header_up Host {upstream_hostport}
                 transport http {
                     read_timeout 0
                     write_timeout 0
@@ -188,7 +165,7 @@ http://d1vajlb5xnngpm.cloudfront.net {
 
         handle /wisp* {
             reverse_proxy localhost:3000 {
-                header_up Host {upstream_host_port}
+                header_up Host {upstream_hostport}
                 transport http {
                     read_timeout 0
                     write_timeout 0
@@ -196,9 +173,7 @@ http://d1vajlb5xnngpm.cloudfront.net {
             }
         }
 
-        @cloudfrontRoot path /
-
-        handle @cloudfrontRoot {
+        handle / {
             rewrite * /index.html
             root * /usr/share/caddy
             file_server
@@ -210,44 +185,24 @@ http://d1vajlb5xnngpm.cloudfront.net {
         }
     }
 
-    @localhost {
-        header Host localhost*
-    }
-
+    @localhost header Host localhost*
     handle @localhost {
         root * /usr/share/caddy
         file_server
     }
 
-    @localhostIP {
-        header Host 127.0.0.1*
-    }
-
-    handle @localhostIP {
-        root * /usr/share/caddy
-        file_server
-    }
-
-    @private10 {
-        header Host 10.*
-    }
+    @private10 header Host 10.*
+    @private192 header Host 192.168.*
+    @private172 header_regexp Host ^172\.(1[6-9]|2[0-9]|3[0-1])\.
 
     handle @private10 {
         root * /usr/share/caddy
         file_server
     }
 
-    @private192 {
-        header Host 192.168.*
-    }
-
     handle @private192 {
         root * /usr/share/caddy
         file_server
-    }
-
-    @private172 {
-        header_regexp Host ^172\.(1[6-9]|2[0-9]|3[0-1])\.
     }
 
     handle @private172 {
@@ -258,13 +213,18 @@ http://d1vajlb5xnngpm.cloudfront.net {
     redir https://{host}{uri} permanent
 }
 
-:4000 {
+http://:4000 {
+    @tooLong header_regexp Host ^.{61,}$
+    @hasSus header Host *whm* *cpanel* *login*
+
+    respond @tooLong "Request denied" 493
+    respond @hasSus "Request denied" 493
+
     handle /api* {
         uri strip_prefix /api
         rewrite * /wisp{uri}
-
         reverse_proxy localhost:3000 {
-            header_up Host {upstream_host_port}
+            header_up Host {upstream_hostport}
             transport http {
                 read_timeout 0
                 write_timeout 0
@@ -274,7 +234,7 @@ http://d1vajlb5xnngpm.cloudfront.net {
 
     handle /wisp* {
         reverse_proxy localhost:3000 {
-            header_up Host {upstream_host_port}
+            header_up Host {upstream_hostport}
             transport http {
                 read_timeout 0
                 write_timeout 0
@@ -282,22 +242,16 @@ http://d1vajlb5xnngpm.cloudfront.net {
         }
     }
 
-    @botRoot {
-        host zaka.is-a.bot
-        path /
-    }
-
-    handle @botRoot {
-        rewrite * /bot.html
+    @botHost host zaka.is-a.bot
+    handle @botHost {
+        @root path /
+        rewrite @root /bot.html
         root * /usr/share/caddy
         file_server
     }
 
-    @root {
-        path /
-    }
-
-    handle @root {
+    @normalRoot path /
+    handle @normalRoot {
         rewrite * /index.html
         root * /usr/share/caddy
         file_server
@@ -309,7 +263,8 @@ http://d1vajlb5xnngpm.cloudfront.net {
     }
 
     handle_errors {
-        rewrite * /404.html
+        @404 expression `{http.error.status_code} == 404`
+        rewrite @404 /404.html
         root * /usr/share/caddy
         file_server
     }

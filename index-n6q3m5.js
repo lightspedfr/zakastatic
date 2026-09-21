@@ -1,4 +1,4 @@
-importScripts("./.assets/index-t6p2d8.js");
+importScripts(".assets/index-t6p2d8.js");
 
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (e) => e.waitUntil(clients.claim()));

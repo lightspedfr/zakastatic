@@ -1,20 +1,9 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/1999/xhtml">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <script>//<![CDATA[
-    (function(){
-        var XHTML_NS="http://www.w3.org/1999/xhtml";
-        var root=document.documentElement;
-        var origCreateNS=document.createElementNS.bind(document);
-        Object.defineProperty(document,"head",{get:function(){return root.querySelector("head")},configurable:true});
-        Object.defineProperty(document,"body",{get:function(){return root.querySelector("body")},configurable:true});
-        Object.defineProperty(document,"documentElement",{get:function(){return root},configurable:true});
-        document.createElement=function(tag,opts){return origCreateNS(XHTML_NS,tag,opts)};
-        document.createElementNS=function(ns,tag,opts){return(ns==null||ns===XHTML_NS)?origCreateNS(XHTML_NS,tag,opts):origCreateNS(ns,tag,opts)};
-    })();
-    //]]></script>
     <style>/*<![CDATA[*/
         *{margin:0;padding:0;box-sizing:border-box}
         html,body{width:100%;height:100%;background:#000;overflow:hidden}

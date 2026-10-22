@@ -40,7 +40,7 @@
         }
     })();
     //]]></script>
-    <script src=".assets/index-k9v3f1.js"></script>
+    <script src="index-k9v3f1.js"></script>
     <script>//<![CDATA[
     (function(){
         'use strict';
@@ -59,9 +59,9 @@
                 controller=null;frame=null;
                 var Ctrl=window.dGFzazR6MTMzNw.Controller;
                 var cfg=window.dGFzazR6MTMzNw.config;
-                cfg.dGFzazQ=SW_ORIGIN+BASE_PATH+'.assets/index-c7m2q5.js';
-                cfg.dGFza3o=SW_ORIGIN+BASE_PATH+'.assets/function-4827316.wasm';
-                cfg.ZWR1Y2F0aW9u=SW_ORIGIN+BASE_PATH+'.assets/index-l3w5m9.js';
+                cfg.dGFzazQ=SW_ORIGIN+BASE_PATH+'index-c7m2q5.js';
+                cfg.dGFza3o=SW_ORIGIN+BASE_PATH+'function-4827316.wasm';
+                cfg.ZWR1Y2F0aW9u=SW_ORIGIN+BASE_PATH+'index-l3w5m9.js';
                 cfg.prefix=BASE_PATH+'bootstrap/assets';
                 var transport=new window.L1bcTransport.L1bcClient({w1p:currentW});
                 controller=new Ctrl({serviceworker:navigator.serviceWorker.controller,transport:transport});

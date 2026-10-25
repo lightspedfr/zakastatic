@@ -6,6 +6,6 @@
     "astro": "^4.0.0"
   },
   "scripts": {
-    "build": "mkdir -p dist && cp -r public/* dist/"
+    "build": "mkdir -p dist && rsync -av . dist/ --exclude dist --exclude .git --exclude node_modules --exclude package.json --exclude astro.config.mjs --exclude tsconfig.json"
   }
 }

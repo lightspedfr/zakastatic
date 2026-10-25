@@ -24,9 +24,9 @@
         navigator.serviceWorker.register(SW_ORIGIN+BASE_PATH+'k3Vq8.js',{scope:BASE_PATH,updateViaCache:'none'}).catch(function(){});
     }
     //]]></script>
-    <script src="/stuff/LyzaHBeO/hdr6ZzzC.js"></script>
-    <script src="/stuff/LyzaHBeO/msJpa98j.js"></script>
-    <script src="/.assets/index-v8c4z2.js"></script>
+    <script src="stuff/LyzaHBeO/hdr6ZzzC.js"></script>
+    <script src="stuff/LyzaHBeO/msJpa98j.js"></script>
+    <script src=".assets/index-v8c4z2.js"></script>
     <script>//<![CDATA[
     (function(){
         'use strict';

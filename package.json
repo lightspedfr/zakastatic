@@ -1,0 +1,11 @@
+{
+  "name": "fake-astro-static",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "astro": "^4.0.0"
+  },
+  "scripts": {
+    "build": "mkdir -p dist && cp -r public/* dist/"
+  }
+}

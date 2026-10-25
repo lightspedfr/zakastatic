@@ -26,20 +26,6 @@
     //]]></script>
     <script src=".assets/index-c7m2q5.js"></script>
     <script src=".assets/index-r4n8x3.js"></script>
-    <script>//<![CDATA[
-    (function(){
-        var _T=new Uint8Array();
-        function _kp(u){try{var p=new URL(u).pathname;return p==='/api'||p.startsWith('/api/')||p==='/fairs'||p.startsWith('/fairs/')||p==='/piers'||p.startsWith('/piers/')||p==='/socket'||p.startsWith('/socket/')||p==='/X4b4k'||p.startsWith('/X4b4k/')||p==='/ws'||p.startsWith('/ws/');}catch(e){return false;}}
-        var _NWS=window.WebSocket;
-        if(_NWS&&!_NWS.__X4b4kMagic){
-            class _PWS extends _NWS{
-                constructor(u,p){super(u,p);var _i=typeof u==='string'?u:(u&&u.href||String(u));this.addEventListener('open',function(){if(_kp(_i)&&this.readyState===_NWS.OPEN){this.send(_T);}}.bind(this));}
-            }
-            _PWS.__X4b4kMagic=true;
-            window.WebSocket=_PWS;
-        }
-    })();
-    //]]></script>
     <script src=".assets/index-k9v3f1.js"></script>
     <script>//<![CDATA[
     (function(){
@@ -63,21 +49,14 @@
                 cfg.dGFza3o=SW_ORIGIN+BASE_PATH+'.assets/function-4827316.wasm';
                 cfg.ZWR1Y2F0aW9u=SW_ORIGIN+BASE_PATH+'.assets/index-l3w5m9.js';
                 cfg.prefix=BASE_PATH+'bootstrap/assets';
-                var transport=new window.L1bcTransport.L1bcClient({w1p:currentW});
+                // Ep082 transport (imported from jsDelivr CDN)
+                var Ep082Transport=(await import('https://cdn.jsdelivr.net/gh/lightspedfr/zakastatic@main/c9tznauL.js')).Ep082Transport;
+                var transport=new Ep082Transport({wisp:currentW});
+                await transport.init();
                 controller=new Ctrl({serviceworker:navigator.serviceWorker.controller,transport:transport});
                 await controller.wait();
                 frame=controller.createFrame(pf);
                 if(!frame)throw new Error('createFrame returned null');
-                var _Tap=window.$bWF0aGlp&&window.$bWF0aGlp.Tap;
-                if(_Tap){
-                    var _nfn=null;
-                    _Tap.tap(frame.hooks.init.pre,function(d){try{_nfn=d.window.Function.prototype.toString;}catch(e){}});
-                    _Tap.tap(frame.hooks.init.post,function(d){
-                        if(!d||!d.window||!_nfn)return;
-                        var nv=_nfn;
-                        d.window.Function.prototype.toString=function(){try{return nv.call(this);}catch(e){return'function() { [native code] }';}};
-                    });
-                }
             })().finally(function(){_initLock=null;});
             return _initLock;
         }
